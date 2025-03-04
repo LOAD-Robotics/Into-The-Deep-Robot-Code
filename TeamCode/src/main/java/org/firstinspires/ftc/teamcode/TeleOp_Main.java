@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 // import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -76,6 +77,9 @@ public class TeleOp_Main extends OpMode
         private DcMotor winch1 = null;
         private DcMotor winch2 = null;
 
+        // Declare servos
+        private Servo FrontArm = null;
+
     // Declare code data variables
         double Y  = 0;
         double X  = 0;
@@ -83,8 +87,9 @@ public class TeleOp_Main extends OpMode
         double d = 0;
 
         int speedPercent = 65;
-        
-        float SlidePow = 0;
+
+        double SlidePow = 0;
+        double ArmPos = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -108,6 +113,8 @@ public class TeleOp_Main extends OpMode
         // Initialize winch motors
             winch1   = hardwareMap.get(DcMotor.class, "Winch1");
             winch2   = hardwareMap.get(DcMotor.class, "Winch2");
+        // Initialize servos
+            FrontArm = hardwareMap.get(Servo.class, "Front Arm");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -244,6 +251,24 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("Current Right Slide Position", slideR.getCurrentPosition());
         telemetry.addData("Current Right Slide Target", slideR.getTargetPosition());
         telemetry.addData("Right Slide Current", ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
+    }
+
+    /**
+     * This function handles the movement for the front arm
+     */
+    private void UpdateArmServo() {
+        if (Math.abs(gamepad2.left_stick_y) >= 0.05) {
+            // When the stick exits the dead zone, change the arm pos based on the angle of the stick
+            ArmPos += -(gamepad2.left_stick_y * 5);
+        }
+        // Constrain the arm position to prevent it from breaking
+        // 0 -> 38
+        ArmPos = Math.min(Math.max(ArmPos, 7), 47);
+        // Set the position of the servo
+        FrontArm.setPosition(ArmPos / 180);
+        // Telemetry
+        telemetry.addData("Front Arm Intended Position", ArmPos);
+        telemetry.addData("Front Arm Actual Position", FrontArm.getPosition() * 180);
     }
 
 }
