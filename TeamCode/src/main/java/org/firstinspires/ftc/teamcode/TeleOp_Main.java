@@ -126,7 +126,7 @@ public class TeleOp_Main extends OpMode
 
         // Define the directions of the slide and winch motors
         slideL.setDirection(DcMotor.Direction.FORWARD);
-        slideR.setDirection(DcMotor.Direction.FORWARD);
+        slideR.setDirection(DcMotor.Direction.REVERSE);
         winch1.setDirection(DcMotor.Direction.FORWARD);
         winch2.setDirection(DcMotor.Direction.FORWARD);
 
@@ -157,6 +157,7 @@ public class TeleOp_Main extends OpMode
 
         UpdateDrivetrain();
         UpdateSlides();
+        UpdateArmServo();
         
     }
 
@@ -200,7 +201,7 @@ public class TeleOp_Main extends OpMode
     }
 
     /**
-     * Describe this function...
+     * This function controls the movement of the linear slides
      */
     private void UpdateSlides() {
         SlidePow = Math.abs(gamepad2.right_stick_y * 1);
@@ -262,7 +263,6 @@ public class TeleOp_Main extends OpMode
             ArmPos += -(gamepad2.left_stick_y * 5);
         }
         // Constrain the arm position to prevent it from breaking
-        // 0 -> 38
         ArmPos = Math.min(Math.max(ArmPos, 7), 47);
         // Set the position of the servo
         FrontArm.setPosition(ArmPos / 180);
