@@ -81,22 +81,22 @@ public class TeleOp_Main extends OpMode
         private Servo FrontArm = null;
 
     // Declare code data variables
-        double Y  = 0;
-        double X  = 0;
-        double rX = 0;
-        double d = 0;
-
-        int speedPercent = 65;
-
-        double SlidePow = 0;
-        double ArmPos = 0;
+        // Variables to store values for the drivetrain
+            double Y  = 0;
+            double X  = 0;
+            double rX = 0;
+            double d = 0;
+            int speedPercent = 65;
+        // Variable to store the movement power (speed) of the linear slides
+            double SlidePow = 0;
+        // Variable to store the movement speed of the front arm
+            double ArmSpeed = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
-        telemetry.addData("Status", "Initialized");
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -119,16 +119,22 @@ public class TeleOp_Main extends OpMode
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        driveFL.setDirection(DcMotor.Direction.REVERSE);
-        driveFR.setDirection(DcMotor.Direction.FORWARD);
-        driveBL.setDirection(DcMotor.Direction.REVERSE);
-        driveBR.setDirection(DcMotor.Direction.FORWARD);
+            driveFL.setDirection(DcMotor.Direction.REVERSE);
+            driveFR.setDirection(DcMotor.Direction.FORWARD);
+            driveBL.setDirection(DcMotor.Direction.REVERSE);
+            driveBR.setDirection(DcMotor.Direction.FORWARD);
 
-        // Define the directions of the slide and winch motors
-        slideL.setDirection(DcMotor.Direction.FORWARD);
-        slideR.setDirection(DcMotor.Direction.REVERSE);
-        winch1.setDirection(DcMotor.Direction.FORWARD);
-        winch2.setDirection(DcMotor.Direction.FORWARD);
+        // Define the behavior of the slide motors
+            slideL.setDirection(DcMotor.Direction.FORWARD);
+            slideL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            slideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideR.setDirection(DcMotor.Direction.REVERSE);
+            slideR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            slideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Define the behavior of the winch motors
+            winch1.setDirection(DcMotor.Direction.FORWARD);
+            winch2.setDirection(DcMotor.Direction.FORWARD);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -190,14 +196,17 @@ public class TeleOp_Main extends OpMode
      * This function handles the speed limiting for the drivetrain
      */
     private void UpdateSpeedLimiter() {
+        telemetry.addData("-------------------------------------------", "-");
         if (gamepad1.right_trigger > 0.1) {
             speedPercent = 100;
+            telemetry.addData("Driving Speed Percentage", "100%");
         } else if (gamepad1.left_trigger > 0.1) {
             speedPercent = 33;
+            telemetry.addData("Driving Speed Percentage", "33%");
         } else {
             speedPercent = 66;
+            telemetry.addData("Driving Speed Percentage", "66%");
         }
-        telemetry.addData("Speed Percentage", speedPercent);
     }
 
     /**
@@ -243,15 +252,16 @@ public class TeleOp_Main extends OpMode
                 ((DcMotorEx) slideR).setMotorEnable();
             }
         }
+        telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Slide Power", SlidePow);
         telemetry.addData("Left Slide Power", slideL.getPower());
         telemetry.addData("Current Left Slide Position", slideL.getCurrentPosition());
         telemetry.addData("Current Left Slide Target", slideL.getTargetPosition());
-        telemetry.addData("Left Slide Current", ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Left Slide Motor Current", ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
         telemetry.addData("Right Slide Power", slideR.getPower());
         telemetry.addData("Current Right Slide Position", slideR.getCurrentPosition());
         telemetry.addData("Current Right Slide Target", slideR.getTargetPosition());
-        telemetry.addData("Right Slide Current", ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Right Slide Motor Current", ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
     }
 
     /**
@@ -260,15 +270,16 @@ public class TeleOp_Main extends OpMode
     private void UpdateArmServo() {
         if (Math.abs(gamepad2.left_stick_y) >= 0.05) {
             // When the stick exits the dead zone, change the arm pos based on the angle of the stick
-            ArmPos += -(gamepad2.left_stick_y * 5);
+            ArmSpeed -= (gamepad2.left_stick_y * 5);
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 7), 47);
+        ArmSpeed = Math.min(Math.max(ArmSpeed, 7), 47);
         // Set the position of the servo
-        FrontArm.setPosition(ArmPos / 180);
+        FrontArm.setPosition(ArmSpeed / 180);
         // Telemetry
-        telemetry.addData("Front Arm Intended Position", ArmPos);
-        telemetry.addData("Front Arm Actual Position", FrontArm.getPosition() * 180);
+        telemetry.addData("-------------------------------------------", "-");
+        telemetry.addData("Front Arm Speed", ArmSpeed);
+        telemetry.addData("Front Arm Position", FrontArm.getPosition() * 180);
     }
 
 }
