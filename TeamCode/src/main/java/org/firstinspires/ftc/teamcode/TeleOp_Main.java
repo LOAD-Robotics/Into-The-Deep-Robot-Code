@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+// import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -55,6 +55,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
+// Completed so far:
+// - Drivetrain - Robot Centric
+// - Linear Slides
+// - Front Arm
+// - Grippers
+// TODO: Port Slappy Arm Code
+// TODO: Port Winch code
+
 @TeleOp(name="TeleOp_Main", group="Iterative_TeleOp")
 
 public class TeleOp_Main extends OpMode
@@ -64,21 +72,23 @@ public class TeleOp_Main extends OpMode
 
     // Declare hardware variables
         // Declare drive motors
-        private DcMotor driveFL = null;
-        private DcMotor driveFR = null;
-        private DcMotor driveBL = null;
-        private DcMotor driveBR = null;
+        private DcMotor driveFL;
+        private DcMotor driveFR;
+        private DcMotor driveBL;
+        private DcMotor driveBR;
 
         // Declare slide motors
-        private DcMotor slideL = null;
-        private DcMotor slideR = null;
+        private DcMotor slideL;
+        private DcMotor slideR;
 
         // Declare winch motors
-        private DcMotor winch1 = null;
-        private DcMotor winch2 = null;
+        private DcMotor winch1;
+        private DcMotor winch2;
 
         // Declare servos
-        private Servo FrontArm = null;
+        private Servo FrontArm;
+        private Servo FrontArmGripper;
+        private Servo SlideGripper;
 
     // Declare code data variables
         // Variables to store values for the drivetrain
@@ -91,6 +101,10 @@ public class TeleOp_Main extends OpMode
             double SlidePow = 0;
         // Variable to store the movement speed of the front arm
             double ArmSpeed = 0;
+        // Variables for storing the position of the grippers, as well as a millis()-based delay
+            int FrontArmGripperPos = 0;
+            int SlideGripperPos = 0;
+            long OldTime = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -115,6 +129,8 @@ public class TeleOp_Main extends OpMode
             winch2   = hardwareMap.get(DcMotor.class, "Winch2");
         // Initialize servos
             FrontArm = hardwareMap.get(Servo.class, "Front Arm");
+            FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
+            SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -164,6 +180,7 @@ public class TeleOp_Main extends OpMode
         UpdateDrivetrain();
         UpdateSlides();
         UpdateArmServo();
+        UpdateGrippers();
         
     }
 
@@ -179,23 +196,6 @@ public class TeleOp_Main extends OpMode
      */
     private void UpdateDrivetrain() {
 
-        UpdateSpeedLimiter();
-
-        Y = -gamepad1.left_stick_y;
-        X = (gamepad1.left_stick_x * 1.1);
-        rX = gamepad1.right_stick_x;
-        d = JavaUtil.maxOfList(JavaUtil.createListWith(JavaUtil.sumOfList(JavaUtil.createListWith(Math.abs(Y), Math.abs(X), Math.abs(rX))), 1));
-
-        driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
-        driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
-        driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
-        driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
-    }
-
-    /**
-     * This function handles the speed limiting for the drivetrain
-     */
-    private void UpdateSpeedLimiter() {
         telemetry.addData("-------------------------------------------", "-");
         if (gamepad1.right_trigger > 0.1) {
             speedPercent = 100;
@@ -207,6 +207,16 @@ public class TeleOp_Main extends OpMode
             speedPercent = 66;
             telemetry.addData("Driving Speed Percentage", "66%");
         }
+
+        Y = -gamepad1.left_stick_y;
+        X = (gamepad1.left_stick_x * 1.1);
+        rX = gamepad1.right_stick_x;
+        d = JavaUtil.maxOfList(JavaUtil.createListWith(JavaUtil.sumOfList(JavaUtil.createListWith(Math.abs(Y), Math.abs(X), Math.abs(rX))), 1));
+
+        driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
+        driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
+        driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
+        driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
     }
 
     /**
@@ -280,6 +290,38 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Front Arm Speed", ArmSpeed);
         telemetry.addData("Front Arm Position", FrontArm.getPosition() * 180);
+    }
+
+    /**
+     * Describe this function...
+     */
+    private void UpdateGrippers() {
+        if (gamepad2.b) {
+            // When B is pressed, close the bottom gripper and open the top gripper
+            // Get the current time in milliseconds. The value returned represents
+            // the number of milliseconds since midnight, January 1, 1970 UTC.
+            OldTime = System.currentTimeMillis() + 500;
+            FrontArmGripperPos = 100;
+            SlideGripperPos = 50;
+        } else {
+            // When B is not pressed, open the bottom gripper and close the top gripper
+            SlideGripperPos = 120;
+            // Get the current time in milliseconds. The value returned represents
+            // the number of milliseconds since midnight, January 1, 1970 UTC.
+            if (OldTime <= System.currentTimeMillis()) {
+                FrontArmGripperPos = 160;
+            }
+        }
+        if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {
+            FrontArmGripperPos = 160;
+        }
+        // Set the positions of the servos
+        FrontArmGripper.setPosition((double) FrontArmGripperPos / 180);
+        SlideGripper.setPosition((double) SlideGripperPos / 180);
+        // Telemetry
+        // Telemetry
+        telemetry.addData("Front Arm Gripper Position", FrontArmGripperPos);
+        telemetry.addData("Slide Gripper Position", SlideGripperPos);
     }
 
 }
