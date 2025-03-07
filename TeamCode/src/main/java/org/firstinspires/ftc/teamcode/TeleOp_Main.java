@@ -89,6 +89,7 @@ public class TeleOp_Main extends OpMode
         private Servo FrontArm;
         private Servo FrontArmGripper;
         private Servo SlideGripper;
+        private Servo HangingArm;
 
     // Declare code data variables
         // Variables to store values for the drivetrain
@@ -105,6 +106,8 @@ public class TeleOp_Main extends OpMode
             int FrontArmGripperPos = 0;
             int SlideGripperPos = 0;
             long OldTime = 0;
+            int TopHangingArmPos = 0;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -131,6 +134,7 @@ public class TeleOp_Main extends OpMode
             FrontArm = hardwareMap.get(Servo.class, "Front Arm");
             FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
             SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
+            HangingArm = hardwareMap.get(Servo.class, "Hanging Arm");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -181,6 +185,7 @@ public class TeleOp_Main extends OpMode
         UpdateSlides();
         UpdateArmServo();
         UpdateGrippers();
+        UpdateHangingArm();
         
     }
 
@@ -293,7 +298,7 @@ public class TeleOp_Main extends OpMode
     }
 
     /**
-     * Describe this function...
+     * This function handles the opening and closing of both the front arm and slide grippers
      */
     private void UpdateGrippers() {
         if (gamepad2.b) {
@@ -322,6 +327,25 @@ public class TeleOp_Main extends OpMode
         // Telemetry
         telemetry.addData("Front Arm Gripper Position", FrontArmGripperPos);
         telemetry.addData("Slide Gripper Position", SlideGripperPos);
+    }
+
+    /**
+     * This function handles the movement of the slappy arms for hanging
+     */
+    private void UpdateHangingArm() {
+        if (gamepad2.left_bumper) {
+            // When the left bumper is pressed, move the hanging arm in one direction
+            TopHangingArmPos += 6;
+        } else if (gamepad2.right_bumper) {
+            // When the right bumper is pressed, move the hanging arm in the other direction
+            TopHangingArmPos -= 6;
+        }
+        // Constrain the arm position to prevent it from breaking
+        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 110), 200);
+        // Set the position of the servo
+        HangingArm.setPosition((double) Math.abs(TopHangingArmPos - 300) / 300);
+        // Telemetry
+        telemetry.addData("Hanging Arm Position", TopHangingArmPos);
     }
 
 }
