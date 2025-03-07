@@ -290,13 +290,13 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Slide Power", SlidePow);
         telemetry.addData("Left Slide Power", slideL.getPower());
-        telemetry.addData("Current Left Slide Position", slideL.getCurrentPosition());
-        telemetry.addData("Current Left Slide Target", slideL.getTargetPosition());
-        telemetry.addData("Left Slide Motor Current", ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Left Slide Position", slideL.getCurrentPosition());
+        telemetry.addData("Left Slide Target", slideL.getTargetPosition());
+        telemetry.addData("Left Slide Current", ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
         telemetry.addData("Right Slide Power", slideR.getPower());
-        telemetry.addData("Current Right Slide Position", slideR.getCurrentPosition());
-        telemetry.addData("Current Right Slide Target", slideR.getTargetPosition());
-        telemetry.addData("Right Slide Motor Current", ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Right Slide Position", slideR.getCurrentPosition());
+        telemetry.addData("Right Slide Target", slideR.getTargetPosition());
+        telemetry.addData("Right Slide Current", ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
     }
 
     /**
@@ -344,7 +344,7 @@ public class TeleOp_Main extends OpMode
         FrontArmGripper.setPosition((double) FrontArmGripperPos / 180);
         SlideGripper.setPosition((double) SlideGripperPos / 180);
         // Telemetry
-        // Telemetry
+        telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Front Arm Gripper Position", FrontArmGripperPos);
         telemetry.addData("Slide Gripper Position", SlideGripperPos);
     }
@@ -365,6 +365,7 @@ public class TeleOp_Main extends OpMode
         // Set the position of the servo
         HangingArm.setPosition((double) Math.abs(TopHangingArmPos - 300) / 300);
         // Telemetry
+        telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Hanging Arm Position", TopHangingArmPos);
     }
 
@@ -394,6 +395,8 @@ public class TeleOp_Main extends OpMode
         winch2.setTargetPosition(winch2Pos);
         winch2.setPower(0.7);
         winch2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Right Limit Switch State", RLimitSwitch.getState());
         telemetry.addData("Left Limit Switch State", LLimitSwitch.getState());
         telemetry.addData("Intendedwinch1Pos", winch1.getTargetPosition());

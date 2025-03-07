@@ -1,0 +1,393 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@Autonomous(name = "Ascent_Autonomous (Blocks to Java)", group = "Main_Programs", preselectTeleOp = "TeleOp_Main")
+public class Ascent_Autonomous extends LinearOpMode {
+
+  private DcMotor FL;
+  private DcMotor FR;
+  private DcMotor BL;
+  private DcMotor BR;
+  private Servo SlideGripper;
+  private Servo FrontArmGripper;
+  private DcMotor Lslide;
+  private DcMotor Rslide;
+  private IMU imu;
+  private Servo FrontArm;
+
+  boolean IsRunningAuto;
+  boolean GripperState;
+  double DegreesToMetresConstant;
+
+  /**
+   * Describe this function...
+   */
+  private void ResetEncoders() {
+    FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void misc_stuff_i_dont_want_to_delete() {
+    FL.setPower(0.2);
+    FR.setPower(-0.2);
+    BL.setPower(0.2);
+    BR.setPower(-0.2);
+    sleep(4000);
+    FL.setPower(0);
+    FR.setPower(0);
+    BL.setPower(0);
+    BR.setPower(0);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void ToggleGrippers() {
+    int SlideGripperPos;
+    int FrontArmGripperPos;
+
+    if (GripperState == true) {
+      GripperState = false;
+      // When B is pressed, close the bottom gripper and open the top gripper
+      SlideGripperPos = 35;
+      SlideGripper.setPosition(SlideGripperPos / 180);
+      FrontArmGripperPos = 100;
+      FrontArmGripper.setPosition(FrontArmGripperPos / 180);
+    } else {
+      GripperState = true;
+      // When B is not pressed, open the bottom gripper and close the top gripper
+      SlideGripperPos = 140;
+      SlideGripper.setPosition(SlideGripperPos / 180);
+      sleep(500);
+      FrontArmGripperPos = 160;
+      FrontArmGripper.setPosition(FrontArmGripperPos / 180);
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void InitializeForAuto() {
+    FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void EncoderlessAutoDrive(double Power_,
+      // TO-DO: Enter the type for argument named Time_
+      UNKNOWN_TYPE Time_) {
+    BL.setPower(Power_);
+    BR.setPower(Power_);
+    BL.setPower(Power_);
+    BR.setPower(Power_);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void TESTAUTO() {
+    IsRunningAuto = true;
+    ToggleGrippers();
+    sleep(500);
+    IsRunningAuto = false;
+  }
+
+  /**
+   * Describe this function...
+   */
+  private double Seconds(double Seconds2) {
+    return Seconds2 * 1000;
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void SetSlidePos(int TargetPos_, double SlidePower_) {
+    Lslide.setTargetPosition(TargetPos_);
+    Rslide.setTargetPosition(TargetPos_);
+    Lslide.setPower(SlidePower_);
+    Rslide.setPower(SlidePower_);
+    Lslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    Rslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+  }
+
+  /**
+   * This sample contains the bare minimum Blocks for any regular OpMode. The 3 blue
+   * Comment Blocks show where to place Initialization code (runs once, after touching the
+   * DS INIT button, and before touching the DS Start arrow), Run code (runs once, after
+   * touching Start), and Loop code (runs repeatedly while the OpMode is active, namely not
+   * Stopped).
+   */
+  @Override
+  public void runOpMode() {
+    int OldTime;
+
+    FL = hardwareMap.get(DcMotor.class, "FL");
+    FR = hardwareMap.get(DcMotor.class, "FR");
+    BL = hardwareMap.get(DcMotor.class, "BL");
+    BR = hardwareMap.get(DcMotor.class, "BR");
+    SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
+    FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
+    Lslide = hardwareMap.get(DcMotor.class, "Lslide");
+    Rslide = hardwareMap.get(DcMotor.class, "Rslide");
+    imu = hardwareMap.get(IMU.class, "imu");
+    FrontArm = hardwareMap.get(Servo.class, "Front Arm");
+
+    // Put initialization blocks here.
+    // Initialize the IMU with non-default settings. To use this block,
+    // plug one of the "new IMU.Parameters" blocks into the parameters socket.
+    // Create a Parameters object for use with an IMU in a REV Robotics Control Hub or
+    // Expansion Hub, specifying the hub's orientation on the robot via the direction that
+    // the REV Robotics logo is facing and the direction that the USB ports are facing.
+    imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+    Lslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    Rslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    BL.setDirection(DcMotor.Direction.REVERSE);
+    FL.setDirection(DcMotor.Direction.REVERSE);
+    BR.setDirection(DcMotor.Direction.FORWARD);
+    FR.setDirection(DcMotor.Direction.FORWARD);
+    Lslide.setDirection(DcMotor.Direction.REVERSE);
+    Rslide.setDirection(DcMotor.Direction.FORWARD);
+    Lslide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    Rslide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    waitForStart();
+    GripperState = false;
+    IsRunningAuto = false;
+    OldTime = 0;
+    if (opModeIsActive()) {
+      // ----------------------------------------------------------------------------------------------
+      RightAuto();
+    }
+    while (opModeIsActive()) {
+      sleep(100);
+    }
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void Grab_Transfer() {
+    ToggleGrippers();
+    // \/ Human Player Delay
+    sleep(0);
+    SetArmServoPos(43);
+    sleep(2000);
+    ToggleGrippers();
+    sleep(250);
+    SetArmServoPos(0);
+    sleep(2000);
+    ToggleGrippers();
+  }
+
+  /**
+   * RIGHT: POSITIVE
+   * LEFT: NEGATIVE
+   */
+  private void AutoDrive(double Speed_, double Distance_) {
+    // TO-DO: Change unit to distance instead of degrees
+    // 360deg/0.14m
+    // 2571.4deg/1m
+    DegreesToMetresConstant = 1700;
+    FL.setTargetPosition((int) (FL.getCurrentPosition() + DegreesToMetresConstant * Distance_));
+    FR.setTargetPosition((int) (FR.getCurrentPosition() + DegreesToMetresConstant * Distance_));
+    BL.setTargetPosition((int) (BL.getCurrentPosition() + DegreesToMetresConstant * Distance_));
+    BR.setTargetPosition((int) (BR.getCurrentPosition() + DegreesToMetresConstant * Distance_));
+    FL.setPower(Speed_);
+    FR.setPower(Speed_);
+    BL.setPower(Speed_);
+    BR.setPower(Speed_);
+    InitializeForAuto();
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void RightAuto() {
+    // Pull back from wall
+    AutoDrive(0.4, -0.325);
+    sleep((long) Seconds(0.8));
+    // Grab Sample
+    Grab_Transfer();
+    // Enter your comment here!
+    AutoDrive(0.4, -0.3);
+    SetSlidePos(5000, 1);
+    sleep((long) Seconds(1.5));
+    AutoTurn(0.75, 42.5);
+    sleep((long) Seconds(0.7));
+    AutoDrive(0.4, 0.95);
+    sleep((long) Seconds(2));
+    ToggleGrippers();
+    sleep((long) Seconds(1.5));
+    AutoDrive(0.4, -0.35);
+    sleep((long) Seconds(1));
+    SetSlidePos(0, 1);
+    AutoTurn(0.8, 130);
+    sleep((long) Seconds(1));
+    DriveForSeconds_(-0.5, 1);
+    sleep((long) Seconds(0.25));
+    AutoDrive(0.3, 0.1);
+    sleep((long) Seconds(0.5));
+    StrafeForSeconds(-0.5, 0.85);
+    sleep((long) Seconds(0.5));
+    AutoStrafe(0.5, 0.1);
+    sleep((long) Seconds(0.5));
+    AutoDrive(0.3, 0.225);
+    Grab_Transfer();
+    sleep((long) Seconds(0.25));
+    SetSlidePos(5000, 1);
+    AutoTurn(0.8, 180);
+    sleep((long) Seconds(1.2));
+    AutoDrive(0.3, 0.35);
+    sleep((long) Seconds(1.5));
+    AutoTurn(0.5, 45);
+    sleep((long) Seconds(0.5));
+    ToggleGrippers();
+    sleep((long) Seconds(0.25));
+    AutoDrive(0.5, -0.2);
+    SetSlidePos(0, 1);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void WaitUntilDrivingDone() {
+    int DrivingDeadZone;
+
+    DrivingDeadZone = 5;
+    while (Math.abs(BL.getCurrentPosition() - BL.getTargetPosition()) <= DrivingDeadZone && opModeIsActive()) {
+      sleep(5);
+    }
+    while (Math.abs(BR.getCurrentPosition() - BR.getTargetPosition()) <= DrivingDeadZone && opModeIsActive()) {
+      sleep(5);
+    }
+    while (Math.abs(FL.getCurrentPosition() - FL.getTargetPosition()) <= DrivingDeadZone && opModeIsActive()) {
+      sleep(5);
+    }
+    while (Math.abs(FR.getCurrentPosition() - FR.getTargetPosition()) <= DrivingDeadZone && opModeIsActive()) {
+      sleep(5);
+    }
+    BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void AutoStrafe(double Speed_, double Distance_) {
+    // TO-DO: Change unit to distance instead of degrees
+    // 360deg/0.14m
+    // 2571.4deg/1m
+    DegreesToMetresConstant = 1700;
+    FL.setTargetPosition((int) (FL.getCurrentPosition() + DegreesToMetresConstant * Distance_));
+    FR.setTargetPosition((int) (FR.getCurrentPosition() - DegreesToMetresConstant * Distance_));
+    BL.setTargetPosition((int) (BL.getCurrentPosition() - DegreesToMetresConstant * Distance_));
+    BR.setTargetPosition((int) (BR.getCurrentPosition() + DegreesToMetresConstant * Distance_));
+    FL.setPower(Speed_);
+    FR.setPower(Speed_);
+    BL.setPower(Speed_);
+    BR.setPower(Speed_);
+    InitializeForAuto();
+  }
+
+  /**
+   * RIGHT: POSITIVE
+   * LEFT: NEGATIVE
+   */
+  private void DriveForSeconds_(double Speed_, int Duration_) {
+    BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setPower(Speed_);
+    FR.setPower(Speed_);
+    BL.setPower(Speed_);
+    BR.setPower(Speed_);
+    sleep((long) Seconds(Duration_));
+    BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setPower(0);
+    FR.setPower(0);
+    BL.setPower(0);
+    BR.setPower(0);
+    ResetEncoders();
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void AutoTurn(double Speed_, double Degrees_) {
+    // TO-DO: Change unit to distance instead of degrees
+    // 360deg/0.14m
+    // 2571.4deg/1m
+    DegreesToMetresConstant = 10.36;
+    FL.setTargetPosition((int) (FL.getCurrentPosition() + DegreesToMetresConstant * Degrees_));
+    FR.setTargetPosition((int) (FR.getCurrentPosition() + DegreesToMetresConstant * Degrees_ * -1));
+    BL.setTargetPosition((int) (BL.getCurrentPosition() + DegreesToMetresConstant * Degrees_));
+    BR.setTargetPosition((int) (BR.getCurrentPosition() + DegreesToMetresConstant * Degrees_ * -1));
+    FL.setPower(Speed_);
+    FR.setPower(Speed_);
+    BL.setPower(Speed_);
+    BR.setPower(Speed_);
+    InitializeForAuto();
+  }
+
+  /**
+   * Describe this function...
+   */
+  private void SetArmServoPos(double ArmPos) {
+    // Constrain the arm position to prevent it from breaking
+    // 0 -> 39
+    //
+    ArmPos = ArmPos + 5;
+    ArmPos = Math.min(Math.max(ArmPos, 5), 46);
+    // Set the position of the servo
+    FrontArm.setPosition(ArmPos / 180);
+    // Telemetry
+    telemetry.addData("Front Arm Intended Position", ArmPos);
+    telemetry.addData("Front Arm Actual Position", FrontArm.getPosition() * 180);
+  }
+
+  /**
+   * RIGHT: POSITIVE
+   * LEFT: NEGATIVE
+   */
+  private void StrafeForSeconds(double Speed_, double Duration_) {
+    BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setPower(Speed_);
+    FR.setPower(-Speed_);
+    BL.setPower(-Speed_);
+    BR.setPower(Speed_);
+    sleep((long) Seconds(Duration_));
+    BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    FL.setPower(0);
+    FR.setPower(0);
+    BL.setPower(0);
+    BR.setPower(0);
+    ResetEncoders();
+  }
+}
