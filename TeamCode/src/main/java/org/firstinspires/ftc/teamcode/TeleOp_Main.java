@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 // import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 // import com.qualcomm.robotcore.util.Range;
@@ -55,13 +56,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-// Completed so far:
+// Code ported from Blocks to Java so far:
 // - Drivetrain - Robot Centric
 // - Linear Slides
 // - Front Arm
 // - Grippers
-// TODO: Port Slappy Arm Code
-// TODO: Port Winch code
+// - Slappy Arm
+// - Winch
 
 @TeleOp(name="TeleOp_Main", group="Iterative_TeleOp")
 
@@ -91,6 +92,10 @@ public class TeleOp_Main extends OpMode
         private Servo SlideGripper;
         private Servo HangingArm;
 
+        // Declare limit switches
+        private DigitalChannel RLimitSwitch;
+        private DigitalChannel LLimitSwitch;
+
     // Declare code data variables
         // Variables to store values for the drivetrain
             double Y  = 0;
@@ -107,6 +112,11 @@ public class TeleOp_Main extends OpMode
             int SlideGripperPos = 0;
             long OldTime = 0;
             int TopHangingArmPos = 0;
+        // Variables for storing values for the hanging winches
+            int WinchSpeed = 300;
+            int winch1Pos;
+            int winch2Pos;
+            int MaxWinchPos;
 
 
     /*
@@ -135,6 +145,11 @@ public class TeleOp_Main extends OpMode
             FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
             SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
             HangingArm = hardwareMap.get(Servo.class, "Hanging Arm");
+        // Initialize Limit Switches
+            RLimitSwitch = hardwareMap.get(DigitalChannel.class, "Right Limit Switch");
+            LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
+
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -155,6 +170,10 @@ public class TeleOp_Main extends OpMode
         // Define the behavior of the winch motors
             winch1.setDirection(DcMotor.Direction.FORWARD);
             winch2.setDirection(DcMotor.Direction.FORWARD);
+
+        // Define the behavior of the limit switches
+            RLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
+            LLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -186,6 +205,7 @@ public class TeleOp_Main extends OpMode
         UpdateArmServo();
         UpdateGrippers();
         UpdateHangingArm();
+        UpdateWinches();
         
     }
 
@@ -346,6 +366,40 @@ public class TeleOp_Main extends OpMode
         HangingArm.setPosition((double) Math.abs(TopHangingArmPos - 300) / 300);
         // Telemetry
         telemetry.addData("Hanging Arm Position", TopHangingArmPos);
+    }
+
+    /**
+     * This function handles control of the hanging winches
+     */
+    private void UpdateWinches() {
+
+        WinchSpeed = 300;
+        if (gamepad2.a) {
+            winch1Pos += WinchSpeed;
+        }
+        if (!(RLimitSwitch.getState() || LLimitSwitch.getState())) {
+            // Wind Winch 1 In
+            if (gamepad2.dpad_down) {
+                winch2Pos += WinchSpeed;
+            }
+        } else {
+            MaxWinchPos = winch2.getCurrentPosition() + 2;
+            if (gamepad2.dpad_down && MaxWinchPos < winch2.getCurrentPosition()) {
+                winch2Pos += WinchSpeed;
+            }
+        }
+        winch1.setTargetPosition(winch1Pos);
+        winch1.setPower(0.5);
+        winch1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        winch2.setTargetPosition(winch2Pos);
+        winch2.setPower(0.7);
+        winch2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        telemetry.addData("Right Limit Switch State", RLimitSwitch.getState());
+        telemetry.addData("Left Limit Switch State", LLimitSwitch.getState());
+        telemetry.addData("Intendedwinch1Pos", winch1.getTargetPosition());
+        telemetry.addData("Actualwinch1Pos", winch1.getCurrentPosition());
+        telemetry.addData("Intendedwinch2Pos", winch2.getTargetPosition());
+        telemetry.addData("Actualwinch2Pos", winch2.getCurrentPosition());
     }
 
 }
