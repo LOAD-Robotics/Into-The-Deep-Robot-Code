@@ -91,6 +91,7 @@ public class TeleOp_Main extends OpMode
         private Servo FrontArmGripper;
         private Servo SlideGripper;
         private Servo HangingArm;
+        private Servo SampleAligner;
 
         // Declare limit switches
         private DigitalChannel RLimitSwitch;
@@ -145,6 +146,7 @@ public class TeleOp_Main extends OpMode
             FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
             SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
             HangingArm = hardwareMap.get(Servo.class, "Hanging Arm");
+            SampleAligner = hardwareMap.get(Servo.class, "Sample Aligner");
         // Initialize Limit Switches
             RLimitSwitch = hardwareMap.get(DigitalChannel.class, "Right Limit Switch");
             LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
@@ -206,6 +208,7 @@ public class TeleOp_Main extends OpMode
         UpdateGrippers();
         UpdateHangingArm();
         UpdateWinches();
+        UpdateSampleAligner();
         
     }
 
@@ -214,6 +217,19 @@ public class TeleOp_Main extends OpMode
      */
     @Override
     public void stop() {
+    }
+
+    /**
+     * This function handles the math for the mecanum drivetrain
+     */
+    private void UpdateSampleAligner() {
+        double FrontArmPos = (FrontArm.getPosition() * 180);
+        if (gamepad2.x){
+            SampleAligner.setPosition((double) 120 / 180);
+        }else{
+            SampleAligner.setPosition((double) 50 / 180);
+        }
+
     }
 
     /**
@@ -326,7 +342,7 @@ public class TeleOp_Main extends OpMode
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             OldTime = System.currentTimeMillis() + 500;
-            FrontArmGripperPos = 100;
+            FrontArmGripperPos = 180;
             SlideGripperPos = 50;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
@@ -334,7 +350,7 @@ public class TeleOp_Main extends OpMode
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             if (OldTime <= System.currentTimeMillis()) {
-                FrontArmGripperPos = 160;
+                FrontArmGripperPos = 120;
             }
         }
         if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {
@@ -361,7 +377,7 @@ public class TeleOp_Main extends OpMode
             TopHangingArmPos -= 6;
         }
         // Constrain the arm position to prevent it from breaking
-        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 110), 200);
+        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 120), 215);
         // Set the position of the servo
         HangingArm.setPosition((double) Math.abs(TopHangingArmPos - 300) / 300);
         // Telemetry
