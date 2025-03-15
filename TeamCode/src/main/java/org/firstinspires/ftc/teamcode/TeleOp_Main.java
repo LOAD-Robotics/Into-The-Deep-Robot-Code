@@ -41,6 +41,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 // import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+// For Gobilda odometry pods
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import java.util.Locale;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -97,6 +102,9 @@ public class TeleOp_Main extends OpMode
         private DigitalChannel RLimitSwitch;
         private DigitalChannel LLimitSwitch;
 
+        // Declare Gobilda Odometry Pod
+        GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+
     // Declare code data variables
         // Variables to store values for the drivetrain
             double Y  = 0;
@@ -107,7 +115,7 @@ public class TeleOp_Main extends OpMode
         // Variable to store the movement power (speed) of the linear slides
             double SlidePow = 0;
         // Variable to store the movement speed of the front arm
-            double ArmSpeed = 0;
+            double ArmPos = 0;
         // Variables for storing the position of the grippers, as well as a millis()-based delay
             int FrontArmGripperPos = 0;
             int SlideGripperPos = 0;
@@ -150,6 +158,8 @@ public class TeleOp_Main extends OpMode
         // Initialize Limit Switches
             RLimitSwitch = hardwareMap.get(DigitalChannel.class, "Right Limit Switch");
             LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
+        // Initialize Gobilda Odometry Pods
+            odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
 
 
@@ -177,6 +187,40 @@ public class TeleOp_Main extends OpMode
             RLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
             LLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
+        // Configure the Gobilda Odometry Pods
+            /*
+            Set the odometry pod positions relative to the point that the odometry computer tracks around.
+            The X pod offset refers to how far sideways from the tracking point the
+            X (forward) odometry pod is. Left of the center is a positive number,
+            right of center is a negative number. the Y pod offset refers to how far forwards from
+            the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
+            backwards is a negative number.
+             */
+            odo.setOffsets(-152.4, 187.325);
+            /*
+            Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
+            the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.
+            If you're using another kind of odometry pod, fill in the function
+            with the number of ticks per mm of your odometry pod.
+             */
+            odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+            /*
+            Set the direction that each of the two odometry pods count. The X (forward) pod should
+            increase when you move the robot forward. And the Y (strafe) pod should increase when
+            you move the robot to the left.
+             */
+            odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            /*
+            Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
+            The IMU will automatically calibrate when first powered on, but recalibrating before running
+            the robot is a good idea to ensure that the calibration is "good".
+            resetPosAndIMU will reset the position to 0,0,0 and also recalibrate the IMU.
+            This is recommended before you run your autonomous, as a bad initial calibration can cause
+            an incorrect starting value for x, y, and heading.
+             */
+            //odo.recalibrateIMU();
+            odo.resetPosAndIMU();
+
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -202,12 +246,18 @@ public class TeleOp_Main extends OpMode
     @Override
     public void loop() {
 
+        /*
+        Request an update from the Pinpoint odometry computer. This checks almost all outputs
+        from the device in a single I2C read.
+        */
+        odo.update();
+
         UpdateDrivetrain();
         UpdateSlides();
         UpdateArmServo();
         UpdateGrippers();
         UpdateHangingArm();
-        UpdateWinches();
+        //UpdateWinches();
         UpdateSampleAligner();
         
     }
@@ -224,7 +274,7 @@ public class TeleOp_Main extends OpMode
      */
     private void UpdateSampleAligner() {
         double FrontArmPos = (FrontArm.getPosition() * 180);
-        if (gamepad2.x){
+        if (FrontArmPos < 11){
             SampleAligner.setPosition((double) 120 / 180);
         }else{
             SampleAligner.setPosition((double) 50 / 180);
@@ -321,15 +371,15 @@ public class TeleOp_Main extends OpMode
     private void UpdateArmServo() {
         if (Math.abs(gamepad2.left_stick_y) >= 0.05) {
             // When the stick exits the dead zone, change the arm pos based on the angle of the stick
-            ArmSpeed -= (gamepad2.left_stick_y * 5);
+            ArmPos -= (gamepad2.left_stick_y * 5);
         }
         // Constrain the arm position to prevent it from breaking
-        ArmSpeed = Math.min(Math.max(ArmSpeed, 7), 47);
+        ArmPos = Math.min(Math.max(ArmPos, 10), 47);
         // Set the position of the servo
-        FrontArm.setPosition(ArmSpeed / 180);
+        FrontArm.setPosition(ArmPos / 180);
         // Telemetry
         telemetry.addData("-------------------------------------------", "-");
-        telemetry.addData("Front Arm Speed", ArmSpeed);
+        telemetry.addData("Front Arm Speed", ArmPos);
         telemetry.addData("Front Arm Position", FrontArm.getPosition() * 180);
     }
 
@@ -354,7 +404,7 @@ public class TeleOp_Main extends OpMode
             }
         }
         if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {
-            FrontArmGripperPos = 160;
+            FrontArmGripperPos = 120;
         }
         // Set the positions of the servos
         FrontArmGripper.setPosition((double) FrontArmGripperPos / 180);
@@ -377,7 +427,7 @@ public class TeleOp_Main extends OpMode
             TopHangingArmPos -= 6;
         }
         // Constrain the arm position to prevent it from breaking
-        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 120), 215);
+        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 102), 215);
         // Set the position of the servo
         HangingArm.setPosition((double) Math.abs(TopHangingArmPos - 300) / 300);
         // Telemetry
