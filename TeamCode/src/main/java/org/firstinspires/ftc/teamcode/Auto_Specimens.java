@@ -30,19 +30,24 @@
 package org.firstinspires.ftc.teamcode;
 
 // import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+// import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import com.qualcomm.robotcore.util.Range;
+// import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+// For Gobilda odometry pods
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
 import java.util.Locale;
 
 /*
@@ -59,8 +64,7 @@ import java.util.Locale;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Auto_Specimens", group="Iterative_Auto")
-
+@Autonomous(name = "Auto_Specimens", group = "Iterative_Auto", preselectTeleOp = "TeleOp_Main")
 public class Auto_Specimens extends OpMode
 {
     // Declare OpMode members.
@@ -265,5 +269,4 @@ public class Auto_Specimens extends OpMode
     @Override
     public void stop() {
     }
-
 }

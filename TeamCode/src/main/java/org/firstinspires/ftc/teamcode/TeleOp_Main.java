@@ -374,7 +374,7 @@ public class TeleOp_Main extends OpMode
             ArmPos -= (gamepad2.left_stick_y * 5);
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 10), 47);
+        ArmPos = Math.min(Math.max(ArmPos, 10), 49);
         // Set the position of the servo
         FrontArm.setPosition(ArmPos / 180);
         // Telemetry
