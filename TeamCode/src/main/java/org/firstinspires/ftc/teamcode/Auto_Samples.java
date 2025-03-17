@@ -291,5 +291,3 @@ public class Auto_Samples extends OpMode
         return output; // output value =D
     }
 }
-
-// TEST COMMIT BY ARI =D

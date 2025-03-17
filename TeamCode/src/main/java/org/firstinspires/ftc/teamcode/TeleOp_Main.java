@@ -48,7 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import java.util.Locale;
 
 // Testing to try to import the LOAD_Tools.java library
-import org.firstinspires.ftc.teamcode.LOAD_Tools.java;
+import org.firstinspires.ftc.teamcode.LOAD_Tools;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -129,6 +129,8 @@ public class TeleOp_Main extends OpMode
             int winch1Pos;
             int winch2Pos;
             int MaxWinchPos;
+        // Variables for storing zero offsets for the various servos
+            int zeroOffset_Hanging = 0;
 
 
     /*
@@ -376,6 +378,10 @@ public class TeleOp_Main extends OpMode
             // When the stick exits the dead zone, change the arm pos based on the angle of the stick
             ArmPos -= (gamepad2.left_stick_y * 5);
         }
+        // When the left stick button is pressed, go to the correct angle to get a specimen off the wall
+        if (gamepad2.left_stick_button){
+            ArmPos = 23;
+        }
         // Constrain the arm position to prevent it from breaking
         ArmPos = Math.min(Math.max(ArmPos, 10), 49);
         // Set the position of the servo
@@ -394,12 +400,12 @@ public class TeleOp_Main extends OpMode
             // When B is pressed, close the bottom gripper and open the top gripper
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
-            OldTime = System.currentTimeMillis() + 500;
+            OldTime = System.currentTimeMillis() + 250;
             FrontArmGripperPos = 180;
             SlideGripperPos = 50;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
-            SlideGripperPos = 120;
+            SlideGripperPos = 130;
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             if (OldTime <= System.currentTimeMillis()) {
@@ -432,7 +438,7 @@ public class TeleOp_Main extends OpMode
         // Constrain the arm position to prevent it from breaking
         TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 102), 215);
         // Set the position of the servo
-        HangingArm.setPosition((double) Math.abs(TopHangingArmPos - 300) / 300);
+        HangingArm.setPosition((double) (Math.abs(TopHangingArmPos - 300) + zeroOffset_Hanging) / 300);
         // Telemetry
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Hanging Arm Position", TopHangingArmPos);

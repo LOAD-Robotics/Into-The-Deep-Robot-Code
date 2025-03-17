@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 /**
  * A Public class library of misc nonspecific useful functions!
- *
- * {@link LOAD_Tools#getFieldCentricVector(float[]) getFieldCentricVector}
- *
  * */
 
 public class LOAD_Tools {
