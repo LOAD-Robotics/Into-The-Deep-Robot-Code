@@ -10,7 +10,7 @@ public class LOAD_Tools {
      * Simple vector rotation that takes an input array and will rotate
      * x and y by transform angle and output the new array
      *
-     * @param inpArray The array formatted as {x,y,rotation_angle}
+     * @param inpArray The array formatted as {x,y,heading}
      * */
 
     public float[] rotateVector(float[] inpArray) {

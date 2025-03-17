@@ -125,6 +125,7 @@ public class TeleOp_Main extends OpMode
             int FrontArmGripperPos = 0;
             int SlideGripperPos = 0;
             long OldTime = 0;
+        // Variable for storing the position of the slappy arm
             int TopHangingArmPos = 0;
         // Variables for storing values for the hanging winches
             int WinchSpeed = 300;
@@ -169,10 +170,10 @@ public class TeleOp_Main extends OpMode
             odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
 
-
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        // Define the behavior of the drive motors
+            // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+            // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
+            // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
             driveFL.setDirection(DcMotor.Direction.REVERSE);
             driveFR.setDirection(DcMotor.Direction.FORWARD);
             driveBL.setDirection(DcMotor.Direction.REVERSE);
@@ -311,16 +312,12 @@ public class TeleOp_Main extends OpMode
         rX = gamepad1.right_stick_x;
         d = JavaUtil.maxOfList(JavaUtil.createListWith(JavaUtil.sumOfList(JavaUtil.createListWith(Math.abs(Y), Math.abs(X), Math.abs(rX))), 1));
 
-        driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
-        driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
-        driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
-        driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
-
         if (driveForwardActive == 1){
-            driveFL.setPower(0.8);
-            driveBL.setPower(0.8);
-            driveFR.setPower(0.8);
-            driveBR.setPower(0.8);
+            driveFL.setPower(0.7);
+            driveBL.setPower(0.7);
+            driveFR.setPower(0.7);
+            driveBR.setPower(0.7);
+            ArmPos = 10;
             if (System.currentTimeMillis() > driveForwardBeginTime){
                 driveForwardActive = 2;
             }
@@ -404,7 +401,7 @@ public class TeleOp_Main extends OpMode
         }
         // When the left stick button is pressed, go to the correct angle to get a specimen off the wall
         if (gamepad2.left_stick_button){
-            ArmPos = 23;
+            ArmPos = 26;
         }
         // Constrain the arm position to prevent it from breaking
         ArmPos = Math.min(Math.max(ArmPos, 10), 49);
@@ -498,10 +495,10 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Right Limit Switch State", RLimitSwitch.getState());
         telemetry.addData("Left Limit Switch State", LLimitSwitch.getState());
-        telemetry.addData("Intendedwinch1Pos", winch1.getTargetPosition());
-        telemetry.addData("Actualwinch1Pos", winch1.getCurrentPosition());
-        telemetry.addData("Intendedwinch2Pos", winch2.getTargetPosition());
-        telemetry.addData("Actualwinch2Pos", winch2.getCurrentPosition());
+        telemetry.addData("Intended Winch 1 Position", winch1.getTargetPosition());
+        telemetry.addData("Actual Winch 1 Position", winch1.getCurrentPosition());
+        telemetry.addData("Intended Winch 2 Position", winch2.getTargetPosition());
+        telemetry.addData("Actual Winch 2 Position", winch2.getCurrentPosition());
     }
 
 }
