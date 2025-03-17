@@ -29,4 +29,17 @@ public class LOAD_Tools {
         return output; // output value =D
     }
 
+    /**
+     * Takes inputs of the joystick positions and current robot heading,
+     * and returns 4 values for the motor powers
+     *
+     * @param inpArray The array formatted as {leftStickX, leftStickY, rightStickX, heading}
+     * */
+
+    public float[] fieldCentricDriving(float[] inpArray) {
+        float[] output = new float[4];
+
+        return output;
+    }
+
 }
