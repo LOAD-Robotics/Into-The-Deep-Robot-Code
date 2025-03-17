@@ -132,7 +132,7 @@ public class TeleOp_Main extends OpMode
             int winch2Pos;
             int MaxWinchPos;
         // Variables for storing zero offsets for the various servos
-            int zeroOffset_Hanging = 0;
+            int zeroOffset_Hanging = 7;
 
 
     /*
@@ -264,7 +264,7 @@ public class TeleOp_Main extends OpMode
         UpdateArmServo();
         UpdateGrippers();
         UpdateHangingArm();
-        //UpdateWinches();
+        UpdateWinches();
         UpdateSampleAligner();
         
     }
@@ -334,8 +334,7 @@ public class TeleOp_Main extends OpMode
         if (gamepad1.dpad_up && (driveForwardActive == 0)) {
             driveForwardActive = 1;
             driveForwardBeginTime = System.currentTimeMillis() + 50;
-        }
-        if (!gamepad1.dpad_up && (driveForwardActive == 2)){
+        }else if (!gamepad1.dpad_up && (driveForwardActive == 2)){
             driveForwardActive = 0;
         }
     }
