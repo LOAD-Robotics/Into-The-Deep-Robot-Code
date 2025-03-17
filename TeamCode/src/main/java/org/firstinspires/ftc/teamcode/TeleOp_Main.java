@@ -115,6 +115,8 @@ public class TeleOp_Main extends OpMode
             double rX = 0;
             double d = 0;
             int speedPercent = 65;
+            int driveForwardActive = 0;
+            double driveForwardBeginTime = 0;
         // Variable to store the movement power (speed) of the linear slides
             double SlidePow = 0;
         // Variable to store the movement speed of the front arm
@@ -313,6 +315,29 @@ public class TeleOp_Main extends OpMode
         driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
         driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
         driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
+
+        if (driveForwardActive == 1){
+            driveFL.setPower(0.8);
+            driveBL.setPower(0.8);
+            driveFR.setPower(0.8);
+            driveBR.setPower(0.8);
+            if (System.currentTimeMillis() > driveForwardBeginTime){
+                driveForwardActive = 2;
+            }
+        }else{
+            driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
+            driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
+            driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
+            driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
+        }
+
+        if (gamepad1.dpad_up && (driveForwardActive == 0)) {
+            driveForwardActive = 1;
+            driveForwardBeginTime = System.currentTimeMillis() + 50;
+        }
+        if (!gamepad1.dpad_up && (driveForwardActive == 2)){
+            driveForwardActive = 0;
+        }
     }
 
     /**
