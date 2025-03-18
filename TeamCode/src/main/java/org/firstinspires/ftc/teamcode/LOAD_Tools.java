@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
 /**
  * A Public class library of misc nonspecific useful functions!
@@ -30,15 +31,36 @@ public class LOAD_Tools {
     }
 
     /**
-     * Takes inputs of the joystick positions and current robot heading,
-     * and returns 4 values for the motor powers
+     * Takes inputs of the joystick positions,
+     * and returns 4 values for each of the 4 motor powers
      *
-     * @param inpArray The array formatted as {leftStickX, leftStickY, rightStickX, heading}
+     * @param inpArray The array formatted as {leftStickX, leftStickY, rightStickX}
      * */
 
-    public float[] fieldCentricDriving(float[] inpArray) {
-        float[] output = new float[4];
+    public float[] mecanumDriving(float[] inpArray) {
+        // Separate out the values for each of the joystick positions
+        float X = inpArray[0];
+        float Y = inpArray[1];
+        float rX = inpArray[2];
 
+        // Do some calculations in order to obtain a number that is used to ensure
+        // that the outputs of this function are constrained to the interval [-1,1]
+        float d = (float) JavaUtil.maxOfList(JavaUtil.createListWith((Math.abs(Y) + Math.abs(X) + Math.abs(rX)), 1));
+
+        // Calculate the values for each of the drive motors
+        float FL = (((Y + X + rX) / d));
+        float BL = (((Y - X + rX) / d));
+        float FR = (((Y - X - rX) / d));
+        float BR = (((Y + X - rX) / d));
+
+        // Define and assign values to the output variable
+        float[] output = new float[4];
+        output[0] = FL;
+        output[1] = BL;
+        output[2] = FR;
+        output[3] = BR;
+
+        // Return the calculated motor powers
         return output;
     }
 
