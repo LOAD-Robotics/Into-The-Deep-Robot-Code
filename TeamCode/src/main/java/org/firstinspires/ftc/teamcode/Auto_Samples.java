@@ -31,23 +31,19 @@ package org.firstinspires.ftc.teamcode;
 
 // import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 // import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 // import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 // For Gobilda odometry pods
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 import java.util.Locale;
 
 /*
@@ -100,26 +96,11 @@ public class Auto_Samples extends OpMode
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     // Declare code data variables
-    // Variables to store values for the drivetrain
-    double Y  = 0;
-    double X  = 0;
-    double rX = 0;
-    double d = 0;
-    int speedPercent = 65;
-    // Variable to store the movement power (speed) of the linear slides
-    double SlidePow = 0;
-    // Variable to store the movement speed of the front arm
-    double ArmPos = 0;
-    // Variables for storing the position of the grippers, as well as a millis()-based delay
-    int FrontArmGripperPos = 0;
-    int SlideGripperPos = 0;
-    long OldTime = 0;
-    int TopHangingArmPos = 0;
-    // Variables for storing values for the hanging winches
-    int WinchSpeed = 300;
-    int winch1Pos;
-    int winch2Pos;
-    int MaxWinchPos;
+    // Variables for storing odometry data and configs
+    float headingOffset = 0;
+    // Declare LOAD_Tools object
+    LOAD_Tools lt = new LOAD_Tools();
+
 
 
 
@@ -232,6 +213,7 @@ public class Auto_Samples extends OpMode
     @Override
     public void start() {
         runtime.reset();
+        move(-50, 0, 0);
     }
 
     /*
@@ -272,22 +254,95 @@ public class Auto_Samples extends OpMode
     public void stop() {
     }
 
-    private void move(int x, int y, int h) {
+    // 0 degrees rotation is straight out from the alliance station towards the opposing alliance station
+    // 90 degrees is facing right, -90 is facing left, 180 is facing towards the drivers
 
-    }
+    private void move(float x, float y, float h) {
+        odo.update();
+        Pose2D odometryPos = odo.getPosition();
+        float startX = (float) odometryPos.getY(DistanceUnit.CM);
+        float startY = (float) odometryPos.getX(DistanceUnit.CM);
+        float startH = (float) odometryPos.getHeading(AngleUnit.DEGREES) + headingOffset;
 
-    public float[] getFieldCentricVector(float[] inpArray) {
-        float[] output = new float[3]; // Declare the adjusted output value
-        float[] tempPolar = new float[2];  // Declare a temporary polar vector for the maths
+        double positionDeadZone = 2;
+        double headingDeadZone = 10;
 
-        tempPolar[0] = (float) Math.sqrt(Math.pow(inpArray[0],2) + Math.pow(inpArray[1],2)); // Calculate the R portion of our tempPolar vector
-        // Calculate the Theta portion of our tempPolar vector and adjust it by our heading
-        tempPolar[1] = (float) Math.atan2(inpArray[0],inpArray[1]) + (float) Math.toRadians(inpArray[2]);
+        boolean Xreached = false;
+        boolean Yreached = false;
+        boolean Hreached = false;
 
-        output[0] = (float) Math.cos(tempPolar[1]) * tempPolar[0]; // Convert adjusted vector back to rectangular and assign it to output x
-        output[1] = (float) Math.sin(tempPolar[1]) * tempPolar[0]; // Convert adjusted vector back to rectangular and assign it to output y
-        output[2] = inpArray[2]; // keep heading the same as it was
+        float speed = (float) 0.35;
 
-        return output; // output value =D
+        while (!(Xreached && Yreached && Hreached)){
+            odo.update();
+            odometryPos = odo.getPosition();
+
+            float xPos = (float) odometryPos.getY(DistanceUnit.CM) - startX;
+            float X = xPos + x;
+            float outX = 0;
+            if (X < -positionDeadZone){
+                outX = -speed;
+            }else if (X > positionDeadZone){
+                outX = speed;
+            }else{
+                Xreached = true;
+            }
+
+            float yPos = (float) odometryPos.getX(DistanceUnit.CM) - startY;
+            float Y = yPos - y;
+            float outY = 0;
+            if (Y < -positionDeadZone){
+                outY = -speed;
+            }else if (Y > positionDeadZone){
+                outY = speed;
+            }else{
+                Yreached = true;
+            }
+
+            float heading = (float) odometryPos.getHeading(AngleUnit.DEGREES) + headingOffset - startH;
+            float H = heading + h;
+            float outH = 0;
+            if (H < -headingDeadZone){
+                outH = -speed;
+            }else if (H > headingDeadZone){
+                outH = speed;
+            }else{
+                Hreached = true;
+            }
+
+            float[] driveOutputs = new float[4];
+            driveOutputs[0] = outX;
+            driveOutputs[1] = outY;
+            driveOutputs[2] = outH;
+            driveOutputs[3] = -heading;
+
+            //driveOutputs[0] = gamepad1.left_stick_x;
+            //driveOutputs[1] = gamepad1.left_stick_y;
+            //driveOutputs[2] = gamepad1.right_stick_x;
+            //driveOutputs[3] = -heading;
+
+
+            float[] motors = lt.fieldCentricDriving(driveOutputs);
+
+            driveFL.setPower(motors[0]);
+            driveBL.setPower(motors[1]);
+            driveFR.setPower(motors[2]);
+            driveBR.setPower(motors[3]);
+
+            telemetry.addData("Current Heading", heading);
+            telemetry.addData("Current X Pos", xPos);
+            telemetry.addData("Current Y Pos", yPos);
+            telemetry.addLine();
+            telemetry.addData("Set Heading", h);
+            telemetry.addData("Set X Pos", x);
+            telemetry.addData("Set Y Pos", y);
+
+            telemetry.update();
+
+        }
+        driveFL.setPower(0);
+        driveBL.setPower(0);
+        driveFR.setPower(0);
+        driveBR.setPower(0);
     }
 }

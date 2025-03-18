@@ -108,6 +108,9 @@ public class TeleOp_Main extends OpMode
         // Declare Gobilda Odometry Pod
         GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
+        // Declare LOAD_Tools object
+        LOAD_Tools lt = new LOAD_Tools();
+
     // Declare code data variables
         // Variables to store values for the drivetrain
             double Y  = 0;
@@ -317,9 +320,10 @@ public class TeleOp_Main extends OpMode
             driveBL.setPower(0.7);
             driveFR.setPower(0.7);
             driveBR.setPower(0.7);
-            ArmPos = 10;
-            if (System.currentTimeMillis() > driveForwardBeginTime){
+            ArmPos = 12;
+            if (System.currentTimeMillis() > driveForwardBeginTime + 50){
                 driveForwardActive = 2;
+                ArmPos = 10;
             }
         }else{
             driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
@@ -330,7 +334,7 @@ public class TeleOp_Main extends OpMode
 
         if (gamepad1.dpad_up && (driveForwardActive == 0)) {
             driveForwardActive = 1;
-            driveForwardBeginTime = System.currentTimeMillis() + 50;
+            driveForwardBeginTime = System.currentTimeMillis();
         }else if (!gamepad1.dpad_up && (driveForwardActive == 2)){
             driveForwardActive = 0;
         }
@@ -421,7 +425,7 @@ public class TeleOp_Main extends OpMode
             // When B is pressed, close the bottom gripper and open the top gripper
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
-            OldTime = System.currentTimeMillis() + 250;
+            OldTime = System.currentTimeMillis() + 300;
             FrontArmGripperPos = 180;
             SlideGripperPos = 50;
         } else {

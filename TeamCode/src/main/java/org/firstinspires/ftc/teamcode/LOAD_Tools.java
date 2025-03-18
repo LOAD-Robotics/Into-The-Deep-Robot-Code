@@ -73,17 +73,17 @@ public class LOAD_Tools {
 
     public float[] fieldCentricDriving(float[] inpArray) {
         // Separate out the values for each of the joystick positions
-        float X = inpArray[0];
-        float Y = inpArray[1];
+        float X = -inpArray[0];
+        float Y = -inpArray[1];
         float rX = inpArray[2];
         float h = inpArray[3];
 
         // Perform a vector rotation of the left stick based on the robot's heading
-        float[] stickVector = new float[3];
-        stickVector[0] = X;
-        stickVector[1] = Y;
-        stickVector[2] = -h;
-        float[] correctedVector = rotateVector(stickVector);
+        float[] inputVector = new float[3];
+        inputVector[0] = X;
+        inputVector[1] = Y;
+        inputVector[2] = -h;
+        float[] correctedVector = rotateVector(inputVector);
         X = correctedVector[0];
         Y = correctedVector[1];
 
