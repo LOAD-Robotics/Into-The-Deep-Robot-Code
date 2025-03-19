@@ -80,59 +80,68 @@ public class TeleOp_Main extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
 
     // Declare hardware variables
-        // Declare drive motors
-        private DcMotor driveFL;
-        private DcMotor driveFR;
-        private DcMotor driveBL;
-        private DcMotor driveBR;
+    // Declare drive motors
+    private DcMotor driveFL;
+    private DcMotor driveFR;
+    private DcMotor driveBL;
+    private DcMotor driveBR;
 
-        // Declare slide motors
-        private DcMotor slideL;
-        private DcMotor slideR;
+    // Declare slide motors
+    private DcMotor slideL;
+    private DcMotor slideR;
 
-        // Declare winch motors
-        private DcMotor winch1;
-        private DcMotor winch2;
+    // Declare winch motors
+    private DcMotor winch1;
+    private DcMotor winch2;
 
-        // Declare servos
-        private Servo FrontArm;
-        private Servo FrontArmGripper;
-        private Servo SlideGripper;
-        private Servo HangingArm;
-        private Servo SampleAligner;
+    // Declare servos
+    private Servo FrontArm;
+    private Servo FrontArmGripper;
+    private Servo SlideGripper;
+    private Servo HangingArm;
+    private Servo SampleAligner;
 
-        // Declare limit switches
-        private DigitalChannel RLimitSwitch;
-        private DigitalChannel LLimitSwitch;
+    // Declare limit switches
+    private DigitalChannel RLimitSwitch;
+    private DigitalChannel LLimitSwitch;
 
-        // Declare Gobilda Odometry Pod
-        GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+    // Declare Gobilda Odometry Pod
+    GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
+
+    // Declare LOAD_Tools object
+    LOAD_Tools lt = new LOAD_Tools();
 
     // Declare code data variables
-        // Variables to store values for the drivetrain
-            double Y  = 0;
-            double X  = 0;
-            double rX = 0;
-            double d = 0;
-            int speedPercent = 65;
-        // Variable to store the movement power (speed) of the linear slides
-            double SlidePow = 0;
-        // Variable to store the movement speed of the front arm
-            double ArmPos = 0;
-        // Variables for storing the position of the grippers, as well as a millis()-based delay
-            int FrontArmGripperPos = 0;
-            int SlideGripperPos = 0;
-            long OldTime = 0;
-            int TopHangingArmPos = 0;
-        // Variables for storing values for the hanging winches
-            int WinchSpeed = 300;
-            int winch1Pos;
-            int winch2Pos;
-            int MaxWinchPos;
-        // Variables for storing zero offsets for the various servos
-            int zeroOffset_Hanging = 0;
-        // SAFETY MODE
-            boolean SAFETY_MODE = true
+    // Variables to store values for the drivetrain
+    double Y  = 0;
+    double X  = 0;
+    double rX = 0;
+    double d = 0;
+    int speedPercent = 65;
+    int driveForwardActive = 0;
+    double driveForwardBeginTime = 0;
+    // Variable to store the movement power (speed) of the linear slides
+    double SlidePow = 0;
+    // Variable to store the movement speed of the front arm
+    double ArmPos = 0;
+    // Variables for storing the position of the grippers, as well as a millis()-based delay
+    int FrontArmGripperPos = 0;
+    int SlideGripperPos = 0;
+    long OldTime = 0;
+    // Variable for storing the position of the slappy arm
+    int TopHangingArmPos = 0;
+    // Variables for storing values for the hanging winches
+    int WinchSpeed = 300;
+    int winch1Pos;
+    int winch2Pos;
+    int MaxWinchPos;
+    // Variables for storing zero offsets for the various servos
+        int zeroOffset_Hanging = 0;
+    // SAFETY MODE
+    boolean SAFETY_MODE = true
+            =======
+    int zeroOffset_Hanging = 7;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -145,53 +154,53 @@ public class TeleOp_Main extends OpMode
         // step (using the FTC Robot Controller app on the phone).
         // ---------------------------------------------------------------------------------------
         // Initialize drive motors
-            driveFL  = hardwareMap.get(DcMotor.class, "FL");
-            driveFR  = hardwareMap.get(DcMotor.class, "FR");
-            driveBL  = hardwareMap.get(DcMotor.class, "BL");
-            driveBR  = hardwareMap.get(DcMotor.class, "BR");
+        driveFL  = hardwareMap.get(DcMotor.class, "FL");
+        driveFR  = hardwareMap.get(DcMotor.class, "FR");
+        driveBL  = hardwareMap.get(DcMotor.class, "BL");
+        driveBR  = hardwareMap.get(DcMotor.class, "BR");
         // Initialize slide motors
-            slideL   = hardwareMap.get(DcMotor.class, "Lslide");
-            slideR   = hardwareMap.get(DcMotor.class, "Rslide");
+        slideL   = hardwareMap.get(DcMotor.class, "Lslide");
+        slideR   = hardwareMap.get(DcMotor.class, "Rslide");
         // Initialize winch motors
-            winch1   = hardwareMap.get(DcMotor.class, "Winch1");
-            winch2   = hardwareMap.get(DcMotor.class, "Winch2");
+        winch1   = hardwareMap.get(DcMotor.class, "Winch1");
+        winch2   = hardwareMap.get(DcMotor.class, "Winch2");
         // Initialize servos
-            FrontArm = hardwareMap.get(Servo.class, "Front Arm");
-            FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
-            SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
-            HangingArm = hardwareMap.get(Servo.class, "Hanging Arm");
-            SampleAligner = hardwareMap.get(Servo.class, "Sample Aligner");
+        FrontArm = hardwareMap.get(Servo.class, "Front Arm");
+        FrontArmGripper = hardwareMap.get(Servo.class, "Front Arm Gripper");
+        SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
+        HangingArm = hardwareMap.get(Servo.class, "Hanging Arm");
+        SampleAligner = hardwareMap.get(Servo.class, "Sample Aligner");
         // Initialize Limit Switches
-            RLimitSwitch = hardwareMap.get(DigitalChannel.class, "Right Limit Switch");
-            LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
+        RLimitSwitch = hardwareMap.get(DigitalChannel.class, "Right Limit Switch");
+        LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
         // Initialize Gobilda Odometry Pods
-            odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
 
-
+        // Define the behavior of the drive motors
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-            driveFL.setDirection(DcMotor.Direction.REVERSE);
-            driveFR.setDirection(DcMotor.Direction.FORWARD);
-            driveBL.setDirection(DcMotor.Direction.REVERSE);
-            driveBR.setDirection(DcMotor.Direction.FORWARD);
+        driveFL.setDirection(DcMotor.Direction.REVERSE);
+        driveFR.setDirection(DcMotor.Direction.FORWARD);
+        driveBL.setDirection(DcMotor.Direction.REVERSE);
+        driveBR.setDirection(DcMotor.Direction.FORWARD);
 
         // Define the behavior of the slide motors
-            slideL.setDirection(DcMotor.Direction.FORWARD);
-            slideL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            slideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideR.setDirection(DcMotor.Direction.REVERSE);
-            slideR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            slideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideL.setDirection(DcMotor.Direction.FORWARD);
+        slideL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideR.setDirection(DcMotor.Direction.REVERSE);
+        slideR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Define the behavior of the winch motors
-            winch1.setDirection(DcMotor.Direction.FORWARD);
-            winch2.setDirection(DcMotor.Direction.FORWARD);
+        winch1.setDirection(DcMotor.Direction.FORWARD);
+        winch2.setDirection(DcMotor.Direction.FORWARD);
 
         // Define the behavior of the limit switches
-            RLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
-            LLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        RLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
+        LLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         // Configure the Gobilda Odometry Pods
             /*
@@ -202,20 +211,20 @@ public class TeleOp_Main extends OpMode
             the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
             backwards is a negative number.
              */
-            odo.setOffsets(-152.4, 187.325);
+        odo.setOffsets(-152.4, 187.325);
             /*
             Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
             the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.
             If you're using another kind of odometry pod, fill in the function
             with the number of ticks per mm of your odometry pod.
              */
-            odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
             /*
             Set the direction that each of the two odometry pods count. The X (forward) pod should
             increase when you move the robot forward. And the Y (strafe) pod should increase when
             you move the robot to the left.
              */
-            odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
             /*
             Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
             The IMU will automatically calibrate when first powered on, but recalibrating before running
@@ -224,8 +233,8 @@ public class TeleOp_Main extends OpMode
             This is recommended before you run your autonomous, as a bad initial calibration can cause
             an incorrect starting value for x, y, and heading.
              */
-            //odo.recalibrateIMU();
-            odo.resetPosAndIMU();
+        //odo.recalibrateIMU();
+        odo.resetPosAndIMU();
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -275,8 +284,10 @@ public class TeleOp_Main extends OpMode
             UpdateHangingArm();
             //UpdateWinches();
         }
+        UpdateHangingArm();
+        UpdateWinches();
         UpdateSampleAligner();
-        
+
     }
 
     /*
@@ -326,10 +337,29 @@ public class TeleOp_Main extends OpMode
         rX = gamepad1.right_stick_x;
         d = JavaUtil.maxOfList(JavaUtil.createListWith(JavaUtil.sumOfList(JavaUtil.createListWith(Math.abs(Y), Math.abs(X), Math.abs(rX))), 1));
 
-        driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
-        driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
-        driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
-        driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
+        if (driveForwardActive == 1){
+            driveFL.setPower(0.7);
+            driveBL.setPower(0.7);
+            driveFR.setPower(0.7);
+            driveBR.setPower(0.7);
+            ArmPos = 12;
+            if (System.currentTimeMillis() > driveForwardBeginTime + 50){
+                driveForwardActive = 2;
+                ArmPos = 10;
+            }
+        }else{
+            driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
+            driveBL.setPower(((Y - X + rX) / d) * ((double) speedPercent / 100));
+            driveFR.setPower(((Y - X - rX) / d) * ((double) speedPercent / 100));
+            driveBR.setPower(((Y + X - rX) / d) * ((double) speedPercent / 100));
+        }
+
+        if (gamepad1.dpad_up && (driveForwardActive == 0)) {
+            driveForwardActive = 1;
+            driveForwardBeginTime = System.currentTimeMillis();
+        }else if (!gamepad1.dpad_up && (driveForwardActive == 2)){
+            driveForwardActive = 0;
+        }
     }
 
     /**
@@ -397,7 +427,7 @@ public class TeleOp_Main extends OpMode
         }
         // When the left stick button is pressed, go to the correct angle to get a specimen off the wall
         if (gamepad2.left_stick_button){
-            ArmPos = 23;
+            ArmPos = 26;
         }
         // Constrain the arm position to prevent it from breaking
         ArmPos = Math.min(Math.max(ArmPos, 10), 49);
@@ -417,7 +447,7 @@ public class TeleOp_Main extends OpMode
             // When B is pressed, close the bottom gripper and open the top gripper
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
-            OldTime = System.currentTimeMillis() + 250;
+            OldTime = System.currentTimeMillis() + 300;
             FrontArmGripperPos = 180;
             SlideGripperPos = 50;
         } else {
@@ -491,10 +521,10 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Right Limit Switch State", RLimitSwitch.getState());
         telemetry.addData("Left Limit Switch State", LLimitSwitch.getState());
-        telemetry.addData("Intendedwinch1Pos", winch1.getTargetPosition());
-        telemetry.addData("Actualwinch1Pos", winch1.getCurrentPosition());
-        telemetry.addData("Intendedwinch2Pos", winch2.getTargetPosition());
-        telemetry.addData("Actualwinch2Pos", winch2.getCurrentPosition());
+        telemetry.addData("Intended Winch 1 Position", winch1.getTargetPosition());
+        telemetry.addData("Actual Winch 1 Position", winch1.getCurrentPosition());
+        telemetry.addData("Intended Winch 2 Position", winch2.getTargetPosition());
+        telemetry.addData("Actual Winch 2 Position", winch2.getCurrentPosition());
     }
 
 }
