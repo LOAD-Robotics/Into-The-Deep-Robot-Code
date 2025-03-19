@@ -139,7 +139,6 @@ public class TeleOp_Main extends OpMode
         int zeroOffset_Hanging = 0;
     // SAFETY MODE
     boolean SAFETY_MODE = true
-            =======
     int zeroOffset_Hanging = 7;
 
 
