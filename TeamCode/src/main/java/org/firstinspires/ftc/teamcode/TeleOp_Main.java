@@ -139,8 +139,7 @@ public class TeleOp_Main extends OpMode
         int zeroOffset_Hanging = 0;
     // SAFETY MODE
     boolean SAFETY_MODE = true;
-    // New offset thing
-    int zeroOffset_Hanging = 7;
+
 
 
     /*
@@ -280,12 +279,10 @@ public class TeleOp_Main extends OpMode
         UpdateSlides();
         UpdateArmServo();
         UpdateGrippers();
-        if (SAFETY_MODE == false) {
+        if (!SAFETY_MODE) {
             UpdateHangingArm();
             //UpdateWinches();
         }
-        UpdateHangingArm();
-        UpdateWinches();
         UpdateSampleAligner();
 
     }
