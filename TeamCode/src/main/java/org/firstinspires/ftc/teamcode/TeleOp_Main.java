@@ -131,7 +131,8 @@ public class TeleOp_Main extends OpMode
             int MaxWinchPos;
         // Variables for storing zero offsets for the various servos
             int zeroOffset_Hanging = 0;
-
+        // SAFETY MODE
+            boolean SAFETY_MODE = true
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -255,14 +256,25 @@ public class TeleOp_Main extends OpMode
         Request an update from the Pinpoint odometry computer. This checks almost all outputs
         from the device in a single I2C read.
         */
+
+        // SafetyMode Telemetry
+        if (SAFETY_MODE = true){
+            telemetry.addData("[SAFETY MODE]", "True");
+        } else {
+            telemetry.addData("[SAFETY MODE]", "False");
+        }
+        telemetry.addData("-------------------------------------------", "-");
+
         odo.update();
 
         UpdateDrivetrain();
         UpdateSlides();
         UpdateArmServo();
         UpdateGrippers();
-        UpdateHangingArm();
-        //UpdateWinches();
+        if (SAFETY_MODE == false) {
+            UpdateHangingArm();
+            //UpdateWinches();
+        }
         UpdateSampleAligner();
         
     }
@@ -293,7 +305,10 @@ public class TeleOp_Main extends OpMode
     private void UpdateDrivetrain() {
 
         telemetry.addData("-------------------------------------------", "-");
-        if (gamepad1.right_trigger > 0.1) {
+        if (SAFETY_MODE == true){
+            speedPercent = 33;
+            telemetry.addData("[SAFETY MODE ACTIVE] Driving Speed Percentage", "33%");
+        } else if (gamepad1.right_trigger > 0.1) {
             speedPercent = 100;
             telemetry.addData("Driving Speed Percentage", "100%");
         } else if (gamepad1.left_trigger > 0.1) {
@@ -303,6 +318,8 @@ public class TeleOp_Main extends OpMode
             speedPercent = 66;
             telemetry.addData("Driving Speed Percentage", "66%");
         }
+
+
 
         Y = -gamepad1.left_stick_y;
         X = (gamepad1.left_stick_x * 1.1);
