@@ -138,7 +138,8 @@ public class TeleOp_Main extends OpMode
     // Variables for storing zero offsets for the various servos
         int zeroOffset_Hanging = 0;
     // SAFETY MODE
-    boolean SAFETY_MODE = true
+    boolean SAFETY_MODE = true;
+    // New offset thing
     int zeroOffset_Hanging = 7;
 
 
