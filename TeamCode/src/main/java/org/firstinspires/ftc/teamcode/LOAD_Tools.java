@@ -21,7 +21,7 @@ public class LOAD_Tools {
 
         tempPolar[0] = (float) Math.sqrt(Math.pow(inpArray[0],2) + Math.pow(inpArray[1],2)); // Calculate the R portion of our tempPolar vector
         // Calculate the Theta portion of our tempPolar vector and adjust it by our heading
-        tempPolar[1] = (float) Math.atan2(inpArray[0],inpArray[1]) + (float) Math.toRadians(inpArray[2]);
+        tempPolar[1] = (float) Math.atan2(inpArray[1],inpArray[0]) + (float) Math.toRadians(-inpArray[2]);
 
         output[0] = (float) Math.cos(tempPolar[1]) * tempPolar[0]; // Convert adjusted vector back to rectangular and assign it to output x
         output[1] = (float) Math.sin(tempPolar[1]) * tempPolar[0]; // Convert adjusted vector back to rectangular and assign it to output y
@@ -40,7 +40,7 @@ public class LOAD_Tools {
     public float[] robotCentricDriving(float[] inpArray) {
         // Separate out the values for each of the joystick positions
         float X = inpArray[0];
-        float Y = inpArray[1];
+        float Y = -inpArray[1];
         float rX = inpArray[2];
 
         // Do some calculations in order to obtain a number that is used to ensure
@@ -73,7 +73,7 @@ public class LOAD_Tools {
 
     public float[] fieldCentricDriving(float[] inpArray) {
         // Separate out the values for each of the joystick positions
-        float X = -inpArray[0];
+        float X = inpArray[0];
         float Y = -inpArray[1];
         float rX = inpArray[2];
         float h = inpArray[3];
@@ -82,7 +82,7 @@ public class LOAD_Tools {
         float[] inputVector = new float[3];
         inputVector[0] = X;
         inputVector[1] = Y;
-        inputVector[2] = -h;
+        inputVector[2] = h;
         float[] correctedVector = rotateVector(inputVector);
         X = correctedVector[0];
         Y = correctedVector[1];

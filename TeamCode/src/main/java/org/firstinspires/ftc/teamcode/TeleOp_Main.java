@@ -138,7 +138,7 @@ public class TeleOp_Main extends OpMode
     // Variables for storing zero offsets for the various servos
         int zeroOffset_Hanging = 0;
     // SAFETY MODE
-    boolean SAFETY_MODE = true;
+    boolean SAFETY_MODE = false;
 
 
 
@@ -266,7 +266,7 @@ public class TeleOp_Main extends OpMode
         */
 
         // SafetyMode Telemetry
-        if (SAFETY_MODE = true){
+        if (SAFETY_MODE){
             telemetry.addData("[SAFETY MODE]", "True");
         } else {
             telemetry.addData("[SAFETY MODE]", "False");
@@ -281,7 +281,7 @@ public class TeleOp_Main extends OpMode
         UpdateGrippers();
         if (!SAFETY_MODE) {
             UpdateHangingArm();
-            //UpdateWinches();
+            UpdateWinches();
         }
         UpdateSampleAligner();
 
@@ -313,7 +313,7 @@ public class TeleOp_Main extends OpMode
     private void UpdateDrivetrain() {
 
         telemetry.addData("-------------------------------------------", "-");
-        if (SAFETY_MODE == true){
+        if (SAFETY_MODE){
             speedPercent = 33;
             telemetry.addData("[SAFETY MODE ACTIVE] Driving Speed Percentage", "33%");
         } else if (gamepad1.right_trigger > 0.1) {

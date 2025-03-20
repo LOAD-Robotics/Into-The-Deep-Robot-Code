@@ -38,12 +38,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 // import com.qualcomm.robotcore.util.Range;
 // For Gobilda odometry pods
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /*
@@ -213,8 +216,11 @@ public class Auto_Samples extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        move(-50, 0, 0);
+        /*move(0, 50, 0);
+        move(50, 0, 90);
+        move(-50, -50, 0);*/
     }
+
 
     /*
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
@@ -227,24 +233,37 @@ public class Auto_Samples extends OpMode
              */
         odo.update();
 
+
+
         /*
         gets the current Position (x & y in mm, and heading in degrees) of the robot, and prints it.
         */
         Pose2D odometryPos = odo.getPosition();
         float[] pos = new float[3];
-        pos[0] = (float) odometryPos.getX(DistanceUnit.MM);
-        pos[1] = (float) odometryPos.getY(DistanceUnit.MM);
+        pos[0] = (float) odometryPos.getX(DistanceUnit.CM);
+        pos[1] = (float) odometryPos.getY(DistanceUnit.CM);
         pos[2] = (float) odometryPos.getHeading(AngleUnit.DEGREES);
-        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", odometryPos.getX(DistanceUnit.MM), odometryPos.getY(DistanceUnit.MM), odometryPos.getHeading(AngleUnit.DEGREES));
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", odometryPos.getX(DistanceUnit.CM), odometryPos.getY(DistanceUnit.CM), odometryPos.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Position", data);
 
         Pose2D odometryVel = odo.getVelocity();
         float[] vel = new float[3];
-        pos[0] = (float) odometryVel.getX(DistanceUnit.MM);
-        pos[1] = (float) odometryVel.getY(DistanceUnit.MM);
-        pos[2] = (float) odometryVel.getHeading(AngleUnit.DEGREES);
-        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", odometryVel.getX(DistanceUnit.MM), odometryVel.getY(DistanceUnit.MM), odometryVel.getHeading(AngleUnit.DEGREES));
+        vel[0] = (float) odometryVel.getX(DistanceUnit.CM);
+        vel[1] = (float) odometryVel.getY(DistanceUnit.CM);
+        vel[2] = (float) odometryVel.getHeading(AngleUnit.DEGREES);
+        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", odometryVel.getX(DistanceUnit.CM), odometryVel.getY(DistanceUnit.CM), odometryVel.getHeading(AngleUnit.DEGREES));
         telemetry.addData("Velocity", velocity);
+
+        telemetry.addData("left_stick_x", gamepad1.left_stick_x);
+        telemetry.addData("left_stick_y", -gamepad1.left_stick_y);
+        telemetry.addData("right_stick_x", gamepad1.right_stick_x);
+
+        float[] sticks = new float[4];
+        sticks[0] = gamepad1.left_stick_x;
+        sticks[1] = gamepad1.left_stick_y;
+        sticks[2] = gamepad1.right_stick_x;
+        sticks[3] = pos[2];
+        setMotorPowers(lt.fieldCentricDriving(sticks));
     }
 
     /*
@@ -257,38 +276,75 @@ public class Auto_Samples extends OpMode
     // 0 degrees rotation is straight out from the alliance station towards the opposing alliance station
     // 90 degrees is facing right, -90 is facing left, 180 is facing towards the drivers
 
-    private void move(float x, float y, float h) {
+    public float sign(float number){
+        return number / Math.abs(number);
+    }
+
+    private void moveXYH(float xTarget, float yTarget, float hTarget) {
         odo.update();
         Pose2D odometryPos = odo.getPosition();
-        float startX = (float) odometryPos.getY(DistanceUnit.CM);
-        float startY = (float) odometryPos.getX(DistanceUnit.CM);
-        float startH = (float) odometryPos.getHeading(AngleUnit.DEGREES) + headingOffset;
 
-        double positionDeadZone = 2;
-        double headingDeadZone = 10;
+        float startX = (float) odometryPos.getX(DistanceUnit.CM);
+        float startY = (float) odometryPos.getY(DistanceUnit.CM);
+
+
+
+        // Margin of Error \/
+        float MoE = 2.5F;
+        float minSpeed = 22.5F;
+        float maxSpeed = 100;
+
+        boolean xTargReached = false;
+        boolean yTargReached = false;
+        boolean hTargReached = false;
+
+        while (!(xTargReached && yTargReached)) {
+            float xPercent = (float) ((odometryPos.getX(DistanceUnit.CM) - startX) * 100) / xTarget;
+            float yPercent = (float) ((odometryPos.getY(DistanceUnit.CM) - startY) * 100) / yTarget;
+
+            if (xPercent <= 100 && )
+
+
+        }
+
+        while (!(hTargReached)) {
+
+        }
+
+    }
+
+
+    private void oldMove(float x, float y, float h) {
+        odo.update();
+        Pose2D odometryPos = odo.getPosition();
+        float startX = (float) odometryPos.getX(DistanceUnit.CM);
+        float startY = (float) odometryPos.getY(DistanceUnit.CM);
+
+        double positionDeadZone = 5;
+        double headingDeadZone = 5;
 
         boolean Xreached = false;
         boolean Yreached = false;
         boolean Hreached = false;
 
-        float speed = (float) 0.35;
+        float speed = (float) 0.3;
 
-        while (!(Xreached && Yreached && Hreached)){
+        while (!(Xreached && Yreached && Hreached) && !gamepad1.b){
             odo.update();
             odometryPos = odo.getPosition();
 
-            float xPos = (float) odometryPos.getY(DistanceUnit.CM) - startX;
-            float X = xPos + x;
+            float xPos = (float) odometryPos.getX(DistanceUnit.CM) - startX;
+            float X = xPos - x;
             float outX = 0;
             if (X < -positionDeadZone){
-                outX = -speed;
-            }else if (X > positionDeadZone){
                 outX = speed;
+            }else if (X > positionDeadZone){
+                outX = -speed;
             }else{
                 Xreached = true;
             }
 
-            float yPos = (float) odometryPos.getX(DistanceUnit.CM) - startY;
+            float yPos = (float) odometryPos.getY(DistanceUnit.CM) - startY;
             float Y = yPos - y;
             float outY = 0;
             if (Y < -positionDeadZone){
@@ -299,7 +355,7 @@ public class Auto_Samples extends OpMode
                 Yreached = true;
             }
 
-            float heading = (float) odometryPos.getHeading(AngleUnit.DEGREES) + headingOffset - startH;
+            float heading = (float) odometryPos.getHeading(AngleUnit.DEGREES) + headingOffset;
             float H = heading + h;
             float outH = 0;
             if (H < -headingDeadZone){
@@ -316,18 +372,7 @@ public class Auto_Samples extends OpMode
             driveOutputs[2] = outH;
             driveOutputs[3] = -heading;
 
-            //driveOutputs[0] = gamepad1.left_stick_x;
-            //driveOutputs[1] = gamepad1.left_stick_y;
-            //driveOutputs[2] = gamepad1.right_stick_x;
-            //driveOutputs[3] = -heading;
-
-
-            float[] motors = lt.fieldCentricDriving(driveOutputs);
-
-            driveFL.setPower(motors[0]);
-            driveBL.setPower(motors[1]);
-            driveFR.setPower(motors[2]);
-            driveBR.setPower(motors[3]);
+            setMotorPowers(lt.fieldCentricDriving(driveOutputs));
 
             telemetry.addData("Current Heading", heading);
             telemetry.addData("Current X Pos", xPos);
@@ -344,5 +389,17 @@ public class Auto_Samples extends OpMode
         driveBL.setPower(0);
         driveFR.setPower(0);
         driveBR.setPower(0);
+    }
+
+    /**
+     *
+     * @param motors 4 Drivetrain motors in order of {FL, BL, FR, BR}
+     */
+
+    public void setMotorPowers (float[] motors){
+        driveFL.setPower(motors[0]);
+        driveBL.setPower(motors[1]);
+        driveFR.setPower(motors[2]);
+        driveBR.setPower(motors[3]);
     }
 }
