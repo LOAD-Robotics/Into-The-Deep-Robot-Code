@@ -456,9 +456,9 @@ public class TeleOp_Main extends OpMode
                 FrontArmGripperPos = 120;
             }
         }
-        if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {
+        /*if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {
             FrontArmGripperPos = 120;
-        }
+        }*/
         // Set the positions of the servos
         FrontArmGripper.setPosition((double) FrontArmGripperPos / 180);
         SlideGripper.setPosition((double) SlideGripperPos / 180);
@@ -480,7 +480,7 @@ public class TeleOp_Main extends OpMode
             TopHangingArmPos -= 6;
         }
         // Constrain the arm position to prevent it from breaking
-        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 102), 215);
+        TopHangingArmPos = Math.min(Math.max(TopHangingArmPos, 90), 215);
         // Set the position of the servo
         HangingArm.setPosition((double) (Math.abs(TopHangingArmPos - 300) + zeroOffset_Hanging) / 300);
         // Telemetry
