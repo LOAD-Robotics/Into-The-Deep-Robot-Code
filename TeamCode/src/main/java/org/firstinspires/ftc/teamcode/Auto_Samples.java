@@ -216,9 +216,6 @@ public class Auto_Samples extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        /*move(0, 50, 0);
-        move(50, 0, 90);
-        move(-50, -50, 0);*/
         moveXYH(25,25,0);
     }
 
@@ -244,7 +241,7 @@ public class Auto_Samples extends OpMode
         pos[0] = (float) odometryPos.getX(DistanceUnit.CM);
         pos[1] = (float) odometryPos.getY(DistanceUnit.CM);
         pos[2] = (float) odometryPos.getHeading(AngleUnit.DEGREES);
-        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", odometryPos.getX(DistanceUnit.CM), odometryPos.getY(DistanceUnit.CM), odometryPos.getHeading(AngleUnit.DEGREES));
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos[0], pos[1], pos[2]);
         telemetry.addData("Position", data);
 
         Pose2D odometryVel = odo.getVelocity();
@@ -252,7 +249,7 @@ public class Auto_Samples extends OpMode
         vel[0] = (float) odometryVel.getX(DistanceUnit.CM);
         vel[1] = (float) odometryVel.getY(DistanceUnit.CM);
         vel[2] = (float) odometryVel.getHeading(AngleUnit.DEGREES);
-        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", odometryVel.getX(DistanceUnit.CM), odometryVel.getY(DistanceUnit.CM), odometryVel.getHeading(AngleUnit.DEGREES));
+        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel[0], vel[1], vel[2]);
         telemetry.addData("Velocity", velocity);
 
         telemetry.addData("left_stick_x", gamepad1.left_stick_x);
@@ -276,10 +273,6 @@ public class Auto_Samples extends OpMode
 
     // 0 degrees rotation is straight out from the alliance station towards the opposing alliance station
     // 90 degrees is facing right, -90 is facing left, 180 is facing towards the drivers
-
-    public float sign(float number){
-        return number / Math.abs(number);
-    }
 
     private void moveXYH(float xTarget, float yTarget, float hTarget) {
         odo.update();
@@ -307,20 +300,28 @@ public class Auto_Samples extends OpMode
             float outY = 0;
 
             if (xPercent <= 100 - MoE) {
-                outX = (float) 50 * sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
+                outX = (float) 50 * lt.sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
             } else if (xPercent >= 100 + MoE) {
-                outX = (float) 50 * sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
+                outX = (float) 50 * lt.sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
             } else {
                 xTargReached = true;
             }
 
             if (yPercent <= 100 - MoE) {
-                outX = (float) 50 * sign( (float) (odometryPos.getY(DistanceUnit.CM) - startY));
+                outX = (float) 50 * lt.sign( (float) (odometryPos.getY(DistanceUnit.CM) - startY));
             } else if (yPercent >= 100 + MoE) {
-                outX = (float) 50 * sign( (float) (odometryPos.getY(DistanceUnit.CM) - startY));
+                outX = (float) 50 * lt.sign( (float) (odometryPos.getY(DistanceUnit.CM) - startY));
             } else {
                 yTargReached = true;
             }
+
+            float[] functionInputs = new float[4];
+            functionInputs[0] = outX;
+            functionInputs[1] = outY;
+            functionInputs[2] = 0;
+            functionInputs[3] = (float) odometryPos.getHeading(AngleUnit.DEGREES);
+
+            setMotorPowers(lt.fieldCentricDriving(functionInputs));
 
 
         }
@@ -331,7 +332,7 @@ public class Auto_Samples extends OpMode
 
     }
 
-
+    /*
     private void oldMove(float x, float y, float h) {
         odo.update();
         Pose2D odometryPos = odo.getPosition();
@@ -408,10 +409,12 @@ public class Auto_Samples extends OpMode
         driveFR.setPower(0);
         driveBR.setPower(0);
     }
+    */
 
     /**
+     *  Sets the power of each of the drivetrain motors individually.
      *
-     * @param motors 4 Drivetrain motors in order of {FL, BL, FR, BR}
+     * @param motors motor powers in order of {FL, BL, FR, BR}
      */
 
     public void setMotorPowers (float[] motors){

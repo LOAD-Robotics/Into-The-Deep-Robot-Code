@@ -108,4 +108,14 @@ public class LOAD_Tools {
         return output;
     }
 
+    /**
+     * Takes a number as input and returns either -1 or 1 depending on the sign of the number
+     *
+     * @param number The number to determine the sign of
+     * */
+
+    public float sign(float number){
+        return number / Math.abs(number);
+    }
+
 }
