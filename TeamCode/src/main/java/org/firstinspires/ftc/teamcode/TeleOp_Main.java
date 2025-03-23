@@ -184,6 +184,10 @@ public class TeleOp_Main extends OpMode
         driveFR.setDirection(DcMotor.Direction.FORWARD);
         driveBL.setDirection(DcMotor.Direction.REVERSE);
         driveBR.setDirection(DcMotor.Direction.FORWARD);
+        driveFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        driveFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        driveBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        driveBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Define the behavior of the slide motors
         slideL.setDirection(DcMotor.Direction.FORWARD);
@@ -195,7 +199,9 @@ public class TeleOp_Main extends OpMode
 
         // Define the behavior of the winch motors
         winch1.setDirection(DcMotor.Direction.FORWARD);
+        winch1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         winch2.setDirection(DcMotor.Direction.FORWARD);
+        winch2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Define the behavior of the limit switches
         RLimitSwitch.setMode(DigitalChannel.Mode.INPUT);

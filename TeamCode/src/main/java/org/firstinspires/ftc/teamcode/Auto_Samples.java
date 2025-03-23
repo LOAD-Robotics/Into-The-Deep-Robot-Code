@@ -293,9 +293,11 @@ public class Auto_Samples extends OpMode
         boolean hTargReached = false;
 
         while (!(xTargReached && yTargReached)) {
+            // Variables to store the percentage the robot has moved towards the target point
             float xPercent = (float) ((odometryPos.getX(DistanceUnit.CM) - startX) * 100) / xTarget;
             float yPercent = (float) ((odometryPos.getY(DistanceUnit.CM) - startY) * 100) / yTarget;
 
+            // Variables to store the virtual joystick position
             float outX = 0;
             float outY = 0;
 
@@ -315,6 +317,8 @@ public class Auto_Samples extends OpMode
                 yTargReached = true;
             }
 
+
+            // Output the calculated values to the motors
             float[] functionInputs = new float[4];
             functionInputs[0] = outX;
             functionInputs[1] = outY;
@@ -328,6 +332,21 @@ public class Auto_Samples extends OpMode
 
         while (!(hTargReached)) {
             hTargReached = true;
+
+            // Variable to store the percentage the robot has turned towards the target heading
+            float hPercent = (float) ((odometryPos.getHeading(AngleUnit.DEGREES)) * 100) / yTarget;
+
+            // Variable to store the virtual joystick's X position
+            float outH = 0;
+
+            if (hPercent <= 100 - MoE) {
+                outH = (float) 50 * lt.sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
+            } else if (hPercent >= 100 + MoE) {
+                outH = (float) 50 * lt.sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
+            } else {
+                xTargReached = true;
+            }
+
         }
 
     }

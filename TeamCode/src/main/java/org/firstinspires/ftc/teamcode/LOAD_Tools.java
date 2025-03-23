@@ -109,13 +109,54 @@ public class LOAD_Tools {
     }
 
     /**
-     * Takes a number as input and returns either -1 or 1 depending on the sign of the number
+     * Takes any number as input and
+     * returns either -1 or 1 depending on the sign of the number
      *
      * @param number The number to determine the sign of
+     * @return Either -1 or 1 depending on the sign of the input number
      * */
 
     public float sign(float number){
         return number / Math.abs(number);
+    }
+
+    /**
+     * Takes the robot's heading and a target heading as input and
+     * returns either -1 or 1 depending on whether turning the robot clockwise or counterclockwise
+     * would result in reaching the target heading first
+     *
+     * @param headings An array containing the two heading values in the format {robotHeading, targetHeading}
+     */
+
+    public float calcDirection(float[] headings){
+        float robotHeading = headings[0];
+        float targetHeading = headings[1];
+        robotHeading = normalizeHeading(robotHeading);
+        targetHeading = normalizeHeading(targetHeading);
+
+        float d1 = targetHeading + (360 - robotHeading);
+        float d2 = robotHeading - targetHeading;
+
+        // current = 90
+        // target = 180
+
+        return 0;
+    }
+
+    /**
+     * Takes
+     * @param heading A angle in the range of (-180,180)
+     * @return The heading value normalized to (0,360)
+     */
+
+    public float normalizeHeading(float heading){
+        float out;
+        if (heading < 0){
+            out = 360-heading;
+        }else{
+            out = heading;
+        }
+        return out;
     }
 
 }
