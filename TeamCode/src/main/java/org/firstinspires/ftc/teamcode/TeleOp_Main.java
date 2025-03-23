@@ -184,10 +184,10 @@ public class TeleOp_Main extends OpMode
         driveFR.setDirection(DcMotor.Direction.FORWARD);
         driveBL.setDirection(DcMotor.Direction.REVERSE);
         driveBR.setDirection(DcMotor.Direction.FORWARD);
-        driveFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        driveFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        driveBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        driveBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        driveFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        driveFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        driveBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        driveBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Define the behavior of the slide motors
         slideL.setDirection(DcMotor.Direction.FORWARD);
