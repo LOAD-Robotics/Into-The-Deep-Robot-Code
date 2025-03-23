@@ -318,7 +318,7 @@ public class TeleOp_Main extends OpMode
      */
     private void UpdateDrivetrain() {
 
-        telemetry.addData("-------------------------------------------", "-");
+        //telemetry.addData("-------------------------------------------", "-");
         if (SAFETY_MODE){
             speedPercent = 33;
             telemetry.addData("[SAFETY MODE ACTIVE] Driving Speed Percentage", "33%");
