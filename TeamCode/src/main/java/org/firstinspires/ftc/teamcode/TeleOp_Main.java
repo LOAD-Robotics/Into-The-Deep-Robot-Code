@@ -304,8 +304,7 @@ public class TeleOp_Main extends OpMode
      * This function handles the math for the mecanum drivetrain
      */
     private void UpdateSampleAligner() {
-        double FrontArmPos = (FrontArm.getPosition() * 180);
-        if (FrontArmPos < 11){
+        if (ArmPos < 15){
             SampleAligner.setPosition((double) 120 / 180);
         }else{
             SampleAligner.setPosition((double) 50 / 180);
@@ -433,9 +432,9 @@ public class TeleOp_Main extends OpMode
             ArmPos = 26;
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 10), 49);
+        ArmPos = Math.min(Math.max(ArmPos, 14), 50);
         // Set the position of the servo
-        FrontArm.setPosition(ArmPos / 180);
+        FrontArm.setPosition((ArmPos) / 180);
         // Telemetry
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Front Arm Speed", ArmPos);
@@ -451,15 +450,15 @@ public class TeleOp_Main extends OpMode
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             OldTime = System.currentTimeMillis() + 300;
-            FrontArmGripperPos = 180;
+            FrontArmGripperPos = 98;
             SlideGripperPos = 50;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
-            SlideGripperPos = 130;
+            SlideGripperPos = 140;
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             if (OldTime <= System.currentTimeMillis()) {
-                FrontArmGripperPos = 120;
+                FrontArmGripperPos = 90;
             }
         }
         /*if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {

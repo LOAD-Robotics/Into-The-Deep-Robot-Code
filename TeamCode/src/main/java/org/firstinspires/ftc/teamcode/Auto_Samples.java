@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 // import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -208,6 +209,17 @@ public class Auto_Samples extends OpMode
      */
     @Override
     public void init_loop() {
+        float[] pow = new float[4];
+        pow[0]= 0.3F;
+        pow[1]= 0.3F;
+        pow[2]= 0.3F;
+        pow[3]= 0.3F;
+        setMotorPowers(pow);
+
+        telemetry.addData("FLEncoder", String.valueOf(driveFL.getCurrentPosition()));
+        telemetry.addData("BLEncoder", String.valueOf(driveBL.getCurrentPosition()));
+        telemetry.addData("FREncoder", String.valueOf(driveFR.getCurrentPosition()));
+        telemetry.addData("BREncoder", String.valueOf(driveBR.getCurrentPosition()));
     }
 
     /*
@@ -216,7 +228,7 @@ public class Auto_Samples extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        moveXYH(25,25,0);
+        //moveXYH(25,25,0);
     }
 
 
