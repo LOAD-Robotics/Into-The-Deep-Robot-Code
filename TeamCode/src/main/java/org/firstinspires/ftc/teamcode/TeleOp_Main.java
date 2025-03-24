@@ -30,6 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 // import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import android.app.ApplicationErrorReport;
+import android.os.BatteryManager;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,9 +41,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.ElapsedTime;
 // import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 // For Gobilda odometry pods
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -48,6 +55,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import java.util.Locale;
 
 // Testing to try to import the LOAD_Tools.java library
+import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
 import org.firstinspires.ftc.teamcode.LOAD_Tools;
 
 /*
@@ -176,6 +184,7 @@ public class TeleOp_Main extends OpMode
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
 
 
+
         // Define the behavior of the drive motors
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -200,8 +209,10 @@ public class TeleOp_Main extends OpMode
         // Define the behavior of the winch motors
         winch1.setDirection(DcMotor.Direction.FORWARD);
         winch1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        winch1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         winch2.setDirection(DcMotor.Direction.FORWARD);
         winch2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        winch2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Define the behavior of the limit switches
         RLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -278,6 +289,12 @@ public class TeleOp_Main extends OpMode
             telemetry.addData("[SAFETY MODE]", "False");
         }
         telemetry.addData("-------------------------------------------", "-");
+
+        // Initialize FTCDashboard
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+        dashboardTelemetry.addData("battery", 10);
+        dashboardTelemetry.update();
 
         odo.update();
 
@@ -500,25 +517,21 @@ public class TeleOp_Main extends OpMode
 
         WinchSpeed = 300;
         if (gamepad2.a) {
-            winch1Pos += WinchSpeed;
+            winch1.setPower(0.5);
         }
         if (!(RLimitSwitch.getState() || LLimitSwitch.getState())) {
             // Wind Winch 1 In
             if (gamepad2.dpad_down) {
-                winch2Pos += WinchSpeed;
-            }
-        } else {
-            MaxWinchPos = winch2.getCurrentPosition() + 2;
-            if (gamepad2.dpad_down && MaxWinchPos < winch2.getCurrentPosition()) {
-                winch2Pos += WinchSpeed;
+                winch2.setPower(0.7);
             }
         }
-        winch1.setTargetPosition(winch1Pos);
-        winch1.setPower(0.5);
-        winch1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        winch2.setTargetPosition(winch2Pos);
-        winch2.setPower(0.7);
-        winch2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (!(gamepad2.a && gamepad2.dpad_down)){
+            winch2.setPower(0);
+            winch1.setPower(0);
+        }
+
+        winch1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        winch2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Right Limit Switch State", RLimitSwitch.getState());
