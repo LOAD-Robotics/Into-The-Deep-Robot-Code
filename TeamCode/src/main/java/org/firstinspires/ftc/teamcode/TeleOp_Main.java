@@ -30,19 +30,16 @@
 package org.firstinspires.ftc.teamcode;
 
 // import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import android.app.ApplicationErrorReport;
-import android.os.BatteryManager;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 // import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.ElapsedTime;
 // import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -51,12 +48,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 // For Gobilda odometry pods
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import java.util.Locale;
 
 // Testing to try to import the LOAD_Tools.java library
-import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
-import org.firstinspires.ftc.teamcode.LOAD_Tools;
+
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -113,6 +107,9 @@ public class TeleOp_Main extends OpMode
     private DigitalChannel RLimitSwitch;
     private DigitalChannel LLimitSwitch;
 
+    // Declare voltage sensor
+    private VoltageSensor voltage;
+
     // Declare Gobilda Odometry Pod
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
@@ -120,6 +117,8 @@ public class TeleOp_Main extends OpMode
     LOAD_Tools lt = new LOAD_Tools();
 
     // Declare code data variables
+    // Variable to store battery data
+    double MinBatteryVoltage = 9999999;
     // Variables to store values for the drivetrain
     double Y  = 0;
     double X  = 0;
@@ -130,6 +129,8 @@ public class TeleOp_Main extends OpMode
     double driveForwardBeginTime = 0;
     // Variable to store the movement power (speed) of the linear slides
     double SlidePow = 0;
+    double MaxSlideLCurrent = 0;
+    double MaxSlideRCurrent = 0;
     // Variable to store the movement speed of the front arm
     double ArmPos = 0;
     // Variables for storing the position of the grippers, as well as a millis()-based delay
@@ -144,7 +145,9 @@ public class TeleOp_Main extends OpMode
     int winch2Pos;
     int MaxWinchPos;
     // Variables for storing zero offsets for the various servos
-        int zeroOffset_Hanging = 0;
+        // Positive offset moves the arm towards the ideal zero pos
+        // Negative moves it away
+        int zeroOffset_Hanging = 5;
     // SAFETY MODE
     boolean SAFETY_MODE = false;
 
@@ -182,6 +185,9 @@ public class TeleOp_Main extends OpMode
         LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
         // Initialize Gobilda Odometry Pods
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        // Init voltage sensor
+        voltage = hardwareMap.get(VoltageSensor.class, "Control Hub");
+
 
 
 
@@ -290,10 +296,34 @@ public class TeleOp_Main extends OpMode
         }
         telemetry.addData("-------------------------------------------", "-");
 
-        // Initialize FTCDashboard
+        MaxSlideLCurrent = Math.max(MaxSlideLCurrent, ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
+        MaxSlideRCurrent = Math.max(MaxSlideRCurrent, ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
+        MinBatteryVoltage = Math.min(MinBatteryVoltage, voltage.getVoltage());
+
+
+        // Initialize FTCDashboard & output telemetry
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
-        dashboardTelemetry.addData("battery", 10);
+        dashboardTelemetry.addData("battery", voltage.getVoltage());
+        dashboardTelemetry.addData("min Battery", MinBatteryVoltage);
+        dashboardTelemetry.addData("Top Line", 14);
+        dashboardTelemetry.addData("Winch 1 Current", ((DcMotorEx) winch1).getCurrent(CurrentUnit.AMPS));
+        dashboardTelemetry.addData("Winch 2 Current", ((DcMotorEx) winch2).getCurrent(CurrentUnit.AMPS));
+        dashboardTelemetry.addData("Left Slide Current", ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
+        dashboardTelemetry.addData("Right Slide Current", ((DcMotorEx) slideR).getCurrent(CurrentUnit.AMPS));
+        dashboardTelemetry.addData("Left Slide Max Current", MaxSlideLCurrent);
+        dashboardTelemetry.addData("Right Slide Max Current", MaxSlideRCurrent);
+        dashboardTelemetry.addData("X Velocity", odo.getVelocity().getX(DistanceUnit.CM));
+        dashboardTelemetry.addData("Y Velocity", odo.getVelocity().getY(DistanceUnit.CM));
+        dashboardTelemetry.addData("Rotational Velocity", odo.getVelocity().getHeading(AngleUnit.DEGREES));
+
+        if (MaxSlideRCurrent > 7 || MaxSlideLCurrent > 7){
+            slideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            MaxSlideRCurrent = 0;
+            MaxSlideLCurrent = 0;
+        }
+
         dashboardTelemetry.update();
 
         odo.update();
@@ -357,14 +387,14 @@ public class TeleOp_Main extends OpMode
         d = JavaUtil.maxOfList(JavaUtil.createListWith(JavaUtil.sumOfList(JavaUtil.createListWith(Math.abs(Y), Math.abs(X), Math.abs(rX))), 1));
 
         if (driveForwardActive == 1){
-            driveFL.setPower(0.7);
-            driveBL.setPower(0.7);
-            driveFR.setPower(0.7);
-            driveBR.setPower(0.7);
-            ArmPos = 12;
-            if (System.currentTimeMillis() > driveForwardBeginTime + 50){
+            driveFL.setPower(0.8);
+            driveBL.setPower(0.8);
+            driveFR.setPower(0.8);
+            driveBR.setPower(0.8);
+            ArmPos = 16;
+            if (System.currentTimeMillis() > driveForwardBeginTime + 75){
                 driveForwardActive = 2;
-                ArmPos = 10;
+                ArmPos = 0;
             }
         }else{
             driveFL.setPower(((Y + X + rX) / d) * ((double) speedPercent / 100));
@@ -446,10 +476,10 @@ public class TeleOp_Main extends OpMode
         }
         // When the left stick button is pressed, go to the correct angle to get a specimen off the wall
         if (gamepad2.left_stick_button){
-            ArmPos = 26;
+            ArmPos = 29;
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 14), 50);
+        ArmPos = Math.min(Math.max(ArmPos, 13), 50);
         // Set the position of the servo
         FrontArm.setPosition((ArmPos) / 180);
         // Telemetry
@@ -467,7 +497,7 @@ public class TeleOp_Main extends OpMode
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             OldTime = System.currentTimeMillis() + 300;
-            FrontArmGripperPos = 98;
+            FrontArmGripperPos = 99;
             SlideGripperPos = 50;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
@@ -514,21 +544,22 @@ public class TeleOp_Main extends OpMode
      * This function handles control of the hanging winches
      */
     private void UpdateWinches() {
-
-        WinchSpeed = 300;
         if (gamepad2.a) {
-            winch1.setPower(0.5);
+            winch1.setPower(1);
+        }else{
+            winch1.setPower(0);
         }
         if (!(RLimitSwitch.getState() || LLimitSwitch.getState())) {
             // Wind Winch 1 In
             if (gamepad2.dpad_down) {
-                winch2.setPower(0.7);
+                winch2.setPower(1);
+            }else{
+                winch2.setPower(0);
             }
-        }
-        if (!(gamepad2.a && gamepad2.dpad_down)){
+        }else{
             winch2.setPower(0);
-            winch1.setPower(0);
         }
+
 
         winch1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         winch2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -536,10 +567,6 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Right Limit Switch State", RLimitSwitch.getState());
         telemetry.addData("Left Limit Switch State", LLimitSwitch.getState());
-        telemetry.addData("Intended Winch 1 Position", winch1.getTargetPosition());
-        telemetry.addData("Actual Winch 1 Position", winch1.getCurrentPosition());
-        telemetry.addData("Intended Winch 2 Position", winch2.getTargetPosition());
-        telemetry.addData("Actual Winch 2 Position", winch2.getCurrentPosition());
     }
 
 }
