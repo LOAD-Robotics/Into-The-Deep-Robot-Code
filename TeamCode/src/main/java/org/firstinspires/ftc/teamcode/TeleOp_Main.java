@@ -392,7 +392,7 @@ public class TeleOp_Main extends OpMode
             driveFR.setPower(0.8);
             driveBR.setPower(0.8);
             ArmPos = 16;
-            if (System.currentTimeMillis() > driveForwardBeginTime + 75){
+            if (System.currentTimeMillis() > driveForwardBeginTime + 0.5){
                 driveForwardActive = 2;
                 ArmPos = 0;
             }
@@ -432,8 +432,8 @@ public class TeleOp_Main extends OpMode
                 slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else if (gamepad2.right_stick_y < -0.05) {
-                slideL.setTargetPosition(-5000);
-                slideR.setTargetPosition(-5000);
+                slideL.setTargetPosition(-5750);
+                slideR.setTargetPosition(-5750);
                 slideL.setPower(SlidePow);
                 slideR.setPower(SlidePow);
                 slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -497,7 +497,7 @@ public class TeleOp_Main extends OpMode
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             OldTime = System.currentTimeMillis() + 300;
-            FrontArmGripperPos = 99;
+            FrontArmGripperPos = 98;
             SlideGripperPos = 50;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
