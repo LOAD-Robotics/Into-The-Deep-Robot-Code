@@ -472,7 +472,7 @@ public class TeleOp_Main extends OpMode
     private void UpdateArmServo() {
         if (Math.abs(gamepad2.left_stick_y) >= 0.05) {
             // When the stick exits the dead zone, change the arm pos based on the angle of the stick
-            ArmPos -= (gamepad2.left_stick_y * 5);
+            ArmPos -= (gamepad2.left_stick_y * 4);
         }
         // When the left stick button is pressed, go to the correct angle to get a specimen off the wall
         if (gamepad2.left_stick_button){
@@ -481,7 +481,7 @@ public class TeleOp_Main extends OpMode
         // Constrain the arm position to prevent it from breaking
         ArmPos = Math.min(Math.max(ArmPos, 13), 50);
         // Set the position of the servo
-        FrontArm.setPosition((ArmPos) / 180);
+        FrontArm.setPosition((ArmPos+4) / 180);
         // Telemetry
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Front Arm Speed", ArmPos);
@@ -497,7 +497,7 @@ public class TeleOp_Main extends OpMode
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             OldTime = System.currentTimeMillis() + 300;
-            FrontArmGripperPos = 98;
+            FrontArmGripperPos = 100;
             SlideGripperPos = 50;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper

@@ -28,8 +28,18 @@ import org.firstinspires.ftc.teamcode.messages.TwoDeadWheelInputsMessage;
 @Config
 public final class TwoDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 0.0; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = -971.586228867; // y position of the parallel encoder (in tick units)
+        // yt1 -978.7806044977477
+        // yt2 -978.7806044977477
+        // yt3 -966.7899784469071
+        // yt4 -966.7899784469071
+        // yt5 -966.7899784469071
+        public double perpXTicks = -2678.28362446; // x position of the perpendicular encoder (in tick units)
+        // xt1 -2680.8068190861018
+        // xt2 -2680.8068190861018
+        // xt3 -2676.6014947163726
+        // xt4 -2676.6014947163726
+        // xt5 -2676.6014947163726
     }
 
     public static Params PARAMS = new Params();
@@ -50,11 +60,11 @@ public final class TwoDeadWheelLocalizer implements Localizer {
         // TODO: make sure your config has **motors** with these names (or change them)
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "par")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "perp")));
+        par = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "Winch2")));
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "Winch1")));
 
         // TODO: reverse encoder directions if needed
-        //   par.setDirection(DcMotorSimple.Direction.REVERSE);
+        par.setDirection(DcMotorSimple.Direction.REVERSE);
 
         this.imu = imu;
 

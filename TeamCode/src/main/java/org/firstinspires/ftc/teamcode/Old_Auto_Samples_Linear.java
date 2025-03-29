@@ -29,46 +29,57 @@
 
 package org.firstinspires.ftc.teamcode;
 
-// import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+// import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 // import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 // import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 // For Gobilda odometry pods
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 import java.util.Locale;
 
+
 /*
- * This file contains an example of an iterative (Non-Linear) "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When a selection is made from the menu, the corresponding OpMode
+ * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
+ * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
+ * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
  * class is instantiated on the Robot Controller and executed.
  *
  * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all iterative OpModes contain.
+ * It includes all the skeletal structure that all linear OpModes contain.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Auto_Specimens", group = "Iterative_Auto", preselectTeleOp = "TeleOp_Main")
-public class Auto_Specimens extends OpMode
-{
+
+
+
+
+
+
+
+
+
+
+
+
+@TeleOp(name="Basic: Linear OpMode", group="Linear OpMode")
+@Disabled
+public class Old_Auto_Samples_Linear extends LinearOpMode {
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
+
 
     // Declare hardware variables
     // Declare drive motors
@@ -100,32 +111,21 @@ public class Auto_Specimens extends OpMode
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
     // Declare code data variables
-    // Variables to store values for the drivetrain
-    double Y  = 0;
-    double X  = 0;
-    double rX = 0;
-    double d = 0;
-    int speedPercent = 65;
-    // Variable to store the movement power (speed) of the linear slides
-    double SlidePow = 0;
-    // Variable to store the movement speed of the front arm
-    double ArmPos = 0;
-    // Variables for storing the position of the grippers, as well as a millis()-based delay
-    int FrontArmGripperPos = 0;
-    int SlideGripperPos = 0;
-    long OldTime = 0;
-    int TopHangingArmPos = 0;
-    // Variables for storing values for the hanging winches
-    int WinchSpeed = 300;
-    int winch1Pos;
-    int winch2Pos;
-    int MaxWinchPos;
+    // Variables for storing odometry data and configs
+    float headingOffset = 0;
+    // Declare LOAD_Tools object
+    LOAD_Tools lt = new LOAD_Tools();
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+
+
+
+
+
     @Override
-    public void init() {
+    public void runOpMode() {
+
+        // CUSTOM CODE BELOW
+
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -215,58 +215,141 @@ public class Auto_Specimens extends OpMode
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-    }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
-     */
-    @Override
-    public void init_loop() {
-    }
+        // END CUSTOM CODE ABOVE ^
 
-    /*
-     * Code to run ONCE when the driver hits START
-     */
-    @Override
-    public void start() {
+
+        // Wait for the game to start (driver presses START)
+        waitForStart();
         runtime.reset();
+
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+
+
+            odo.update();
+
+
+
+            /*
+            gets the current Position (x & y in mm, and heading in degrees) of the robot, and prints it.
+            */
+            Pose2D odometryPos = odo.getPosition();
+            float[] pos = new float[3];
+            pos[0] = (float) odometryPos.getX(DistanceUnit.CM);
+            pos[1] = (float) odometryPos.getY(DistanceUnit.CM);
+            pos[2] = (float) odometryPos.getHeading(AngleUnit.DEGREES);
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", odometryPos.getX(DistanceUnit.CM), odometryPos.getY(DistanceUnit.CM), odometryPos.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Position", data);
+
+            Pose2D odometryVel = odo.getVelocity();
+            float[] vel = new float[3];
+            vel[0] = (float) odometryVel.getX(DistanceUnit.CM);
+            vel[1] = (float) odometryVel.getY(DistanceUnit.CM);
+            vel[2] = (float) odometryVel.getHeading(AngleUnit.DEGREES);
+            String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", odometryVel.getX(DistanceUnit.CM), odometryVel.getY(DistanceUnit.CM), odometryVel.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Velocity", velocity);
+
+            telemetry.addData("left_stick_x", gamepad1.left_stick_x);
+            telemetry.addData("left_stick_y", -gamepad1.left_stick_y);
+            telemetry.addData("right_stick_x", gamepad1.right_stick_x);
+
+            float[] sticks = new float[4];
+            sticks[0] = gamepad1.left_stick_x;
+            sticks[1] = gamepad1.left_stick_y;
+            sticks[2] = gamepad1.right_stick_x;
+            sticks[3] = pos[2];
+            setMotorPowers(lt.fieldCentricDriving(sticks));
+
+
+
+            telemetry.addData("-","-");
+
+        }
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits START but before they hit STOP
-     */
-    @Override
-    public void loop() {
-        /*
-            Request an update from the Pinpoint odometry computer. This checks almost all outputs
-            from the device in a single I2C read.
-             */
+    public float sign(float number){
+        return number / Math.abs(number);
+    }
+
+    private void moveXYH(float xTarget, float yTarget, float hTarget) {
         odo.update();
-
-        /*
-        gets the current Position (x & y in mm, and heading in degrees) of the robot, and prints it.
-        */
         Pose2D odometryPos = odo.getPosition();
-        float[] pos = new float[3];
-        pos[0] = (float) odometryPos.getX(DistanceUnit.MM);
-        pos[1] = (float) odometryPos.getY(DistanceUnit.MM);
-        pos[2] = (float) odometryPos.getHeading(AngleUnit.DEGREES);
-        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", odometryPos.getX(DistanceUnit.MM), odometryPos.getY(DistanceUnit.MM), odometryPos.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Position", data);
 
-        Pose2D odometryVel = odo.getVelocity();
-        float[] vel = new float[3];
-        pos[0] = (float) odometryVel.getX(DistanceUnit.MM);
-        pos[1] = (float) odometryVel.getY(DistanceUnit.MM);
-        pos[2] = (float) odometryVel.getHeading(AngleUnit.DEGREES);
-        String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", odometryVel.getX(DistanceUnit.MM), odometryVel.getY(DistanceUnit.MM), odometryVel.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Velocity", velocity);
+        float startX = (float) odometryPos.getX(DistanceUnit.CM);
+        float startY = (float) odometryPos.getY(DistanceUnit.CM);
+
+
+
+        // Margin of Error \/
+        float MoE = 2.5F;
+        float minSpeed = 22.5F;
+        float maxSpeed = 100;
+
+        boolean xTargReached = false;
+        boolean yTargReached = false;
+        boolean hTargReached = false;
+
+
+        float outX = 0;
+        float outY = 0;
+        float outH = 0;
+        float heading = 0;
+
+
+        while (!(xTargReached && yTargReached) && opModeIsActive()) {
+            float xPercent = (float) ((odometryPos.getX(DistanceUnit.CM) - startX) * 100) / xTarget;
+            float yPercent = (float) ((odometryPos.getY(DistanceUnit.CM) - startY) * 100) / yTarget;
+
+            if (xPercent <= 100 - MoE) {
+                outX = (float) 50 * sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
+            } else if (xPercent >= 100 + MoE) {
+                outX = (float) 50 * sign( (float) (odometryPos.getX(DistanceUnit.CM) - startX));
+            } else {
+                xTargReached = true;
+            }
+
+            if (yPercent <= 100 - MoE) {
+                outX = (float) 50 * sign( (float) (odometryPos.getY(DistanceUnit.CM) - startY));
+            } else if (yPercent >= 100 + MoE) {
+                outX = (float) 50 * sign( (float) (odometryPos.getY(DistanceUnit.CM) - startY));
+            } else {
+                yTargReached = true;
+            }
+
+            float[] driveOutputs = new float[4];
+            driveOutputs[0] = outX;
+            driveOutputs[1] = outY;
+            driveOutputs[2] = 0;
+            driveOutputs[3] = 0;
+
+
+            setMotorPowers(lt.fieldCentricDriving(driveOutputs));
+
+
+        }
+
+        while (!(hTargReached) && opModeIsActive()) {
+            hTargReached = true;
+        }
+
+
+        driveFL.setPower(0);
+        driveBL.setPower(0);
+        driveFR.setPower(0);
+        driveBR.setPower(0);
+
+
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
+    public void setMotorPowers (float[] motors){
+        driveFL.setPower(motors[0]);
+        driveBL.setPower(motors[1]);
+        driveFR.setPower(motors[2]);
+        driveBR.setPower(motors[3]);
     }
+
 }
+
