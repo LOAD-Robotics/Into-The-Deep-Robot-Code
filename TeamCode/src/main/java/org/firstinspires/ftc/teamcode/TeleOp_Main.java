@@ -481,11 +481,12 @@ public class TeleOp_Main extends OpMode
         // Constrain the arm position to prevent it from breaking
         ArmPos = Math.min(Math.max(ArmPos, 13), 50);
         // Set the position of the servo
-        FrontArm.setPosition((ArmPos+4) / 180);
+        float servoOffset = 3.5F; // Less is further up, more is further down
+        FrontArm.setPosition((ArmPos+servoOffset) / 180);
         // Telemetry
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Front Arm Speed", ArmPos);
-        telemetry.addData("Front Arm Position", FrontArm.getPosition() * 180);
+        telemetry.addData("Front Arm Position", FrontArm.getPosition()+servoOffset * 180);
     }
 
     /**
@@ -498,10 +499,10 @@ public class TeleOp_Main extends OpMode
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             OldTime = System.currentTimeMillis() + 300;
             FrontArmGripperPos = 100;
-            SlideGripperPos = 50;
+            SlideGripperPos = 70;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
-            SlideGripperPos = 140;
+            SlideGripperPos = 110;
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             if (OldTime <= System.currentTimeMillis()) {

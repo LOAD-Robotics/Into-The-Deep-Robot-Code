@@ -5,8 +5,11 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Slides {
     private DcMotor motor1;
@@ -32,6 +35,10 @@ public class Slides {
             motor2.setPower(1);
             motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            if (((DcMotorEx) motor1).getCurrent(CurrentUnit.AMPS) > 7 || ((DcMotorEx) motor2).getCurrent(CurrentUnit.AMPS) > 7) {
+                motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);;
+            }
             return false;
         }
     }

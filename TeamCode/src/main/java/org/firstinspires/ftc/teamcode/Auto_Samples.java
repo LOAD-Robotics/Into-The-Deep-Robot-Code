@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -77,14 +79,37 @@ public class Auto_Samples extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d initialPose = new Pose2d(0,0,0);
+        Pose2d initialPose = new Pose2d(-38,-61.5, Math.toRadians(-180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
+        // Create the hardware instances
         Slides slides = new Slides(hardwareMap);
+        TopGripper slideGripper = new TopGripper(hardwareMap);
+        ArmGripper armGripper = new ArmGripper(hardwareMap);
+        FrontArm arm = new FrontArm(hardwareMap);
+        SampleLever lever = new SampleLever(hardwareMap);
 
-        TrajectoryActionBuilder LR180 = drive.actionBuilder(initialPose)
-                .turn(Math.PI)
-                .turn(-Math.PI);
+        TrajectoryActionBuilder move1 = drive.actionBuilder(initialPose)
+                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90));
+
+        SequentialAction pickUpOffFloor = new SequentialAction(
+                lever.down(),
+                slideGripper.close(),
+                armGripper.open(),
+                arm.floor(),
+                drive.actionBuilder(initialPose).waitSeconds(3).build(),
+                armGripper.close(),
+                slideGripper.open(),
+                drive.actionBuilder(initialPose).waitSeconds(0.25).build(),
+                lever.up(),
+                drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
+                arm.up(),
+                drive.actionBuilder(initialPose).waitSeconds(3).build(),
+                slideGripper.close(),
+                drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
+                armGripper.open()
+        );
 
 
         telemetry.addData("Status", "Initialized");
@@ -94,6 +119,27 @@ public class Auto_Samples extends LinearOpMode {
         waitForStart();
         // Insert code to be run once when START is pressed
         runtime.reset();
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        arm.up(),
+                        lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
+                        slideGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        armGripper.open(),
+                        slides.highBasket(),
+                        drive.actionBuilder(initialPose).waitSeconds(2.5).build(),
+                        drive.actionBuilder(initialPose)
+                                .strafeTo(new Vector2d(-58,-61.5))
+                                .build(),
+                        slideGripper.open(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .strafeToLinearHeading(new Vector2d(-58,-40), Math.toRadians(90))
+                                .build()
+                )
+        );
 
 
 
@@ -105,3 +151,4 @@ public class Auto_Samples extends LinearOpMode {
         }
     }
 }
+
