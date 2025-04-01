@@ -79,7 +79,7 @@ public class Auto_Samples extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d initialPose = new Pose2d(-38,-61.5, Math.toRadians(-180));
+        Pose2d initialPose = new Pose2d(-32,-61.5, Math.toRadians(-180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         // Create the hardware instances
@@ -88,17 +88,14 @@ public class Auto_Samples extends LinearOpMode {
         ArmGripper armGripper = new ArmGripper(hardwareMap);
         FrontArm arm = new FrontArm(hardwareMap);
         SampleLever lever = new SampleLever(hardwareMap);
-
-        TrajectoryActionBuilder move1 = drive.actionBuilder(initialPose)
-                .turn(Math.toRadians(90))
-                .turn(Math.toRadians(-90));
+        HangingArm hangingArm = new HangingArm(hardwareMap);
 
         SequentialAction pickUpOffFloor = new SequentialAction(
                 lever.down(),
                 slideGripper.close(),
                 armGripper.open(),
                 arm.floor(),
-                drive.actionBuilder(initialPose).waitSeconds(3).build(),
+                drive.actionBuilder(initialPose).waitSeconds(2.5).build(),
                 armGripper.close(),
                 slideGripper.open(),
                 drive.actionBuilder(initialPose).waitSeconds(0.25).build(),
@@ -120,28 +117,92 @@ public class Auto_Samples extends LinearOpMode {
         // Insert code to be run once when START is pressed
         runtime.reset();
 
+
         Actions.runBlocking(
                 new SequentialAction(
                         arm.up(),
                         lever.up(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
                         slideGripper.close(),
                         drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
                         armGripper.open(),
                         slides.highBasket(),
-                        drive.actionBuilder(initialPose).waitSeconds(2.5).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.3).build(),
                         drive.actionBuilder(initialPose)
-                                .strafeTo(new Vector2d(-58,-61.5))
+                                .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(225))
                                 .build(),
                         slideGripper.open(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        // Sample 1 Scored
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-58,-40), Math.toRadians(90))
-                                .build()
+                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(88))
+                                .build(),
+                        new ParallelAction(
+                                slides.zero(),
+                                lever.down(),
+                                arm.floor()
+                        ),
+                        drive.actionBuilder(initialPose).waitSeconds(1.4).build(),
+                        armGripper.close(),
+                        // Sample 2 Picked Up
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        arm.up(),
+                        lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.9).build(),
+                        slideGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        armGripper.open(),
+                        slides.highBasket(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .strafeToLinearHeading(new Vector2d(-55, -57), Math.toRadians(230))
+                                .build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        slideGripper.open(),
+                        // Sample 2 Scored
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .strafeToLinearHeading(new Vector2d(-47.5, -41.5), Math.toRadians(86))
+                                .build(),
+                        new ParallelAction(
+                                slides.zero(),
+                                lever.down(),
+                                arm.floor()
+                        ),
+                        drive.actionBuilder(initialPose).waitSeconds(1.4).build(),
+                        armGripper.close(),
+                        // Sample 3 Picked Up
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        arm.up(),
+                        lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(2).build(),
+                        slideGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        armGripper.open(),
+                        slides.highBasket(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
+                        drive.actionBuilder(drive.localizer.getPose())
+                                .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(230))
+                                .build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        slideGripper.open(),
+                        // Sample 3 Scored
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        // Begin Lvl 1 Ascent
+                        new ParallelAction(
+                                new SequentialAction(
+                                        drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
+                                        slides.zero(),
+                                        hangingArm.up()
+                                ),
+                                drive.actionBuilder(drive.localizer.getPose())
+                                        .strafeToSplineHeading(new Vector2d(-50,-20), Math.toRadians(0))
+                                        .splineToConstantHeading(new Vector2d(-20,0), Math.toRadians(0))
+                                        .build()
+                        ),
+                        hangingArm.bar()
                 )
         );
-
-
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {

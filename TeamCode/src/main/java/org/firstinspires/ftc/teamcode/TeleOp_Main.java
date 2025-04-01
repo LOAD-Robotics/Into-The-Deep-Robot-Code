@@ -432,8 +432,8 @@ public class TeleOp_Main extends OpMode
                 slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else if (gamepad2.right_stick_y < -0.05) {
-                slideL.setTargetPosition(-5750);
-                slideR.setTargetPosition(-5750);
+                slideL.setTargetPosition(-5550);
+                slideR.setTargetPosition(-5550);
                 slideL.setPower(SlidePow);
                 slideR.setPower(SlidePow);
                 slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -486,7 +486,7 @@ public class TeleOp_Main extends OpMode
         // Telemetry
         telemetry.addData("-------------------------------------------", "-");
         telemetry.addData("Front Arm Speed", ArmPos);
-        telemetry.addData("Front Arm Position", FrontArm.getPosition()+servoOffset * 180);
+        telemetry.addData("Front Arm Position", FrontArm.getPosition()-servoOffset * 180);
     }
 
     /**

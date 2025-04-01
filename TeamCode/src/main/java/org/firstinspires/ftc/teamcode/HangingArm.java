@@ -7,40 +7,37 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class FrontArm {
+public class HangingArm {
     private Servo arm;
 
-    public FrontArm(HardwareMap hardwareMap) {
-        arm = hardwareMap.get(Servo.class, "Front Arm");
+    public HangingArm(HardwareMap hardwareMap) {
+        arm = hardwareMap.get(Servo.class, "Hanging Arm");
     }
 
-    // Move the arm all the way up
     public class up implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 16.5 / 180);
+            arm.setPosition((double) 185 / 300);
             return false;
         }
     }
     public Action up() {return new up();}
 
-    // Move the arm all the way down
-    public class floor implements Action {
+    public class bar implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 54 / 180);
+            arm.setPosition((double) 190 / 300);
             return false;
         }
     }
-    public Action floor() {return new floor();}
+    public Action bar() {return new bar();}
 
-    // Move the arm to the best pos to get specimens off the wall
-    public class wall implements Action {
+    public class down implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 32.5 / 180);
+            arm.setPosition((double) 215 / 300);
             return false;
         }
     }
-    public Action wall() {return new wall();}
+    public Action down() {return new down();}
 }

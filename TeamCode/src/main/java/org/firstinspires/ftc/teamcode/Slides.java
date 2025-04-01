@@ -31,13 +31,13 @@ public class Slides {
         public boolean run(@NonNull TelemetryPacket packet) {
             motor1.setTargetPosition(0);
             motor2.setTargetPosition(0);
-            motor1.setPower(1);
-            motor2.setPower(1);
+            motor1.setPower(0.8);
+            motor2.setPower(0.8);
             motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (((DcMotorEx) motor1).getCurrent(CurrentUnit.AMPS) > 7 || ((DcMotorEx) motor2).getCurrent(CurrentUnit.AMPS) > 7) {
                 motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);;
+                motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
             return false;
         }
@@ -47,8 +47,8 @@ public class Slides {
     public class highBasket implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            motor1.setTargetPosition(-5770);
-            motor2.setTargetPosition(-5770);
+            motor1.setTargetPosition(-5000);
+            motor2.setTargetPosition(-5000);
             motor1.setPower(1);
             motor2.setPower(1);
             motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
