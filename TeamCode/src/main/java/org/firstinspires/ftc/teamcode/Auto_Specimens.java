@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -55,7 +56,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 // THIS ADDS IT TO DRIVER HUB MENU \/
-@Autonomous(name="Auto_Samples", group="Linear OpMode", preselectTeleOp = "TeleOp_Main")
+@Autonomous(name="Auto_Specimens", group="Linear OpMode", preselectTeleOp = "TeleOp_Main")
 // ADD @Disabled to disable
 
 public class Auto_Specimens extends LinearOpMode {
@@ -103,10 +104,29 @@ public class Auto_Specimens extends LinearOpMode {
         // Insert code to be run once when START is pressed
         runtime.reset();
 
+        double spec1 = 45;
+        double spec2 = 53;
 
         Actions.runBlocking(
                 new SequentialAction(
                         // Insert auto code here
+                        drive.actionBuilder(initialPose)
+                                .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(90))
+                                .strafeToLinearHeading(new Vector2d(30, -45), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(90)), Math.toRadians(90))
+                                // Begin Sample 1 push
+                                .splineToLinearHeading(new Pose2d(36, -13, Math.toRadians(90)), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(39.5, -10, Math.toRadians(90)), Math.toRadians(0))
+                                .splineToLinearHeading(new Pose2d(spec1+4, -13, Math.toRadians(90)), Math.toRadians(-90))
+                                .splineToLinearHeading(new Pose2d(spec1, -52, Math.toRadians(90)), Math.toRadians(-90))
+                                // Sample 1 is pushed, begin Sample 2 push
+                                .splineToLinearHeading(new Pose2d(spec1, -13, Math.toRadians(90)), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(49, -5, Math.toRadians(90)), Math.toRadians(0))
+                                .splineToLinearHeading(new Pose2d(spec2+5, -13, Math.toRadians(90)), Math.toRadians(-90))
+                                .splineToLinearHeading(new Pose2d(spec2, -48, Math.toRadians(90)), Math.toRadians(-90))
+                                // Sample 2 is pushed
+                                .splineToSplineHeading(new Pose2d(50, -40, Math.toRadians(-90)), Math.toRadians(90))
+                                .build()
                 )
         );
 

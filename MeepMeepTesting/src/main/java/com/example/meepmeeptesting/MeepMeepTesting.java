@@ -10,7 +10,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
+        MeepMeep meepMeep = new MeepMeep(700);
 
         RoadRunnerBotEntity SpecimenBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -30,22 +30,6 @@ public class MeepMeepTesting {
                 .splineToLinearHeading(new Pose2d(35, -30, Math.toRadians(90)), Math.toRadians(90))
                 .splineToLinearHeading(new Pose2d(35, -20, Math.toRadians(90)), Math.toRadians(90))
                 .splineToLinearHeading(new Pose2d(45, -10, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(45, -50, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(45, -10, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(55, -10, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(55, -50, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(55, -10, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(62, -10, Math.toRadians(90)), Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(62, -50, Math.toRadians(90)), Math.toRadians(-90))
-                .build());
-         */
-
-        SpecimenBot.runAction(SpecimenBot.getDrive().actionBuilder(new Pose2d(9, -61.5, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(0,-35), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(10, -40, Math.toRadians(90)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(35, -30, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(35, -20, Math.toRadians(90)), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(45, -10, Math.toRadians(90)), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(45, -60, Math.toRadians(90)), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(45,-50), Math.toRadians(-90))
                 .strafeToSplineHeading(new Vector2d(0,-35), Math.toRadians(90))
@@ -56,7 +40,27 @@ public class MeepMeepTesting {
                 .splineToLinearHeading(new Pose2d(53, -60, Math.toRadians(90)), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(53,-50), Math.toRadians(-90))
                 .strafeToSplineHeading(new Vector2d(0,-35), Math.toRadians(90))
+                .build());
+         */
+        double spec1 = 43;
+        double spec2 = 53;
 
+        SpecimenBot.runAction(SpecimenBot.getDrive().actionBuilder(new Pose2d(9, -61.5, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(30, -45), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(90)), Math.toRadians(90))
+                // Begin Sample 1 push
+                .splineToLinearHeading(new Pose2d(36, -13, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(39.5, -10, Math.toRadians(90)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(spec1+3, -13, Math.toRadians(90)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(spec1, -52, Math.toRadians(90)), Math.toRadians(-90))
+                // Sample 1 is pushed, begin Sample 2 push
+                .splineToLinearHeading(new Pose2d(spec1, -13, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(49, -5, Math.toRadians(90)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(spec2+5, -13, Math.toRadians(90)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(spec2, -52, Math.toRadians(90)), Math.toRadians(-90))
+                // Sample 2 is pushed
+                .splineToLinearHeading(new Pose2d(spec2, -13, Math.toRadians(90)), Math.toRadians(90))
                 .build()
         );
 
