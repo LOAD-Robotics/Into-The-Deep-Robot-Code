@@ -30,28 +30,15 @@
 package org.firstinspires.ftc.teamcode;
 
 // NON RR
-import com.acmerobotics.roadrunner.Trajectory;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-// RR CRAP
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 /*
@@ -71,7 +58,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 @Autonomous(name="Auto_Samples", group="Linear OpMode", preselectTeleOp = "TeleOp_Main")
 // ADD @Disabled to disable
 
-public class Auto_Samples extends LinearOpMode {
+public class Auto_Specimens extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -119,59 +106,7 @@ public class Auto_Samples extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        arm.up(),
-                        lever.up(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
-                        slideGripper.close(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
-                        armGripper.open(),
-                        slides.highBasket(),
-                        drive.actionBuilder(initialPose).waitSeconds(1.3).build(),
-                        drive.actionBuilder(initialPose)
-                                .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(225))
-                                .build(),
-                        slideGripper.open(),
-                        // Sample 1 Scored
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(88))
-                                .build(),
-                        pickUpOffFloor,
-                        slides.highBasket(),
-                        drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-55, -57), Math.toRadians(230))
-                                .build(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                        slideGripper.open(),
-                        // Sample 2 Scored
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-47.5, -41.5), Math.toRadians(86))
-                                .build(),
-                        pickUpOffFloor,
-                        slides.highBasket(),
-                        drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(230))
-                                .build(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                        slideGripper.open(),
-                        // Sample 3 Scored
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                        // Begin Lvl 1 Ascent
-                        new ParallelAction(
-                                new SequentialAction(
-                                        drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
-                                        slides.zero(),
-                                        hangingArm.up()
-                                ),
-                                drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToSplineHeading(new Vector2d(-50,-20), Math.toRadians(0))
-                                        .splineToConstantHeading(new Vector2d(-20,0), Math.toRadians(0))
-                                        .build()
-                        ),
-                        hangingArm.bar()
+                        // Insert auto code here
                 )
         );
 
