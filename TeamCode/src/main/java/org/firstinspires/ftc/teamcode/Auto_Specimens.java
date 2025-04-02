@@ -66,7 +66,7 @@ public class Auto_Specimens extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Pose2d initialPose = new Pose2d(-32,-61.5, Math.toRadians(-180));
+        Pose2d initialPose = new Pose2d(9,-61.5, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         // Create the hardware instances
