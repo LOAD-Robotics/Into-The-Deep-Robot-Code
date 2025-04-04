@@ -26,6 +26,16 @@ public class Slides {
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    public class resetZero implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            return false;
+        }
+    }
+    public Action resetZero(){return new resetZero();}
+
     public class zero implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {

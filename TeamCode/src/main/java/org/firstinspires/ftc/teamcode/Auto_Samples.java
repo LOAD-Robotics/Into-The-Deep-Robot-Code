@@ -90,23 +90,6 @@ public class Auto_Samples extends LinearOpMode {
         SampleLever lever = new SampleLever(hardwareMap);
         HangingArm hangingArm = new HangingArm(hardwareMap);
 
-        SequentialAction pickUpOffFloor = new SequentialAction(
-                new ParallelAction(
-                        slides.zero(),
-                        lever.down(),
-                        arm.floor()
-                ),
-                drive.actionBuilder(initialPose).waitSeconds(1.4).build(),
-                armGripper.close(),
-                drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                arm.up(),
-                lever.up(),
-                drive.actionBuilder(initialPose).waitSeconds(1.9).build(),
-                slideGripper.close(),
-                drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
-                armGripper.open()
-        );
-
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -120,10 +103,11 @@ public class Auto_Samples extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         arm.up(),
+                        armGripper.close(),
                         lever.up(),
                         drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
                         slideGripper.close(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         armGripper.open(),
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.3).build(),
@@ -136,7 +120,20 @@ public class Auto_Samples extends LinearOpMode {
                         drive.actionBuilder(drive.localizer.getPose())
                                 .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(88))
                                 .build(),
-                        pickUpOffFloor,
+                        new ParallelAction(
+                                slides.zero(),
+                                lever.down(),
+                                arm.floor()
+                        ),
+                        drive.actionBuilder(initialPose).waitSeconds(1.4).build(),
+                        armGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        arm.up(),
+                        lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.9).build(),
+                        slideGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        armGripper.open(),
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
                         drive.actionBuilder(drive.localizer.getPose())
@@ -149,7 +146,20 @@ public class Auto_Samples extends LinearOpMode {
                         drive.actionBuilder(drive.localizer.getPose())
                                 .strafeToLinearHeading(new Vector2d(-47.5, -41.5), Math.toRadians(86))
                                 .build(),
-                        pickUpOffFloor,
+                        new ParallelAction(
+                                slides.zero(),
+                                lever.down(),
+                                arm.floor()
+                        ),
+                        drive.actionBuilder(initialPose).waitSeconds(1.4).build(),
+                        armGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        arm.up(),
+                        lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.9).build(),
+                        slideGripper.close(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        armGripper.open(),
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
                         drive.actionBuilder(drive.localizer.getPose())
