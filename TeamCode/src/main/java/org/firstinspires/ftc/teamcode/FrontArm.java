@@ -38,7 +38,7 @@ public class FrontArm {
     public class wall implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 32 / 180);
+            arm.setPosition((double) 32.5 / 180);
             return false;
         }
     }

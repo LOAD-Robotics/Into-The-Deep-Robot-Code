@@ -99,8 +99,8 @@ public class Slides {
     public class highChamberClip implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            motor1.setTargetPosition(-795);
-            motor2.setTargetPosition(-795);
+            motor1.setTargetPosition(-775);
+            motor2.setTargetPosition(-775);
             motor1.setPower(1);
             motor2.setPower(1);
             motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -109,6 +109,20 @@ public class Slides {
         }
     }
     public Action highChamberClip(){return new highChamberClip();}
+
+    public class highChamberClipUp implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            motor1.setTargetPosition(-995);
+            motor2.setTargetPosition(-995);
+            motor1.setPower(1);
+            motor2.setPower(1);
+            motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            return false;
+        }
+    }
+    public Action highChamberClipUp(){return new highChamberClipUp();}
 
     public class lowChamber implements Action {
         @Override

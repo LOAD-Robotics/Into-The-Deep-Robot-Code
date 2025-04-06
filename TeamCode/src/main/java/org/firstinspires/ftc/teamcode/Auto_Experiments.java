@@ -76,6 +76,7 @@ public class Auto_Experiments extends LinearOpMode {
         FrontArm arm = new FrontArm(hardwareMap);
         SampleLever lever = new SampleLever(hardwareMap);
         HangingArm hangingArm = new HangingArm(hardwareMap);
+        Drivetrain drivetrain = new Drivetrain(hardwareMap);
 
         SequentialAction pickUpOffFloor = new SequentialAction(
                 new ParallelAction(
@@ -106,9 +107,9 @@ public class Auto_Experiments extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         // Insert auto code here
-                        drive.actionBuilder(drive.localizer.getPose())
-                                .splineToLinearHeading(new Pose2d(0,-33, 90), Math.toRadians(90))
-                                .build()
+                        drivetrain.alignForward(),
+                        drive.actionBuilder(initialPose).waitSeconds(1).build(),
+                        drivetrain.stop()
                 )
         );
 

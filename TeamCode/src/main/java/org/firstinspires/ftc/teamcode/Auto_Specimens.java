@@ -86,6 +86,7 @@ public class Auto_Specimens extends LinearOpMode {
         FrontArm arm = new FrontArm(hardwareMap);
         SampleLever lever = new SampleLever(hardwareMap);
         HangingArm hangingArm = new HangingArm(hardwareMap);
+        Drivetrain align = new Drivetrain(hardwareMap);
 
 
 
@@ -114,13 +115,14 @@ public class Auto_Specimens extends LinearOpMode {
                         armGripper.open(),
                         slides.highChamber(),
                         drive.actionBuilder(initialPose)
-                                .strafeToLinearHeading(new Vector2d(0,-33), Math.toRadians(90))
+                                .strafeToLinearHeading(new Vector2d(0,-32.9), Math.toRadians(90))
                                 .build(),
                         slides.highChamberClip(),
                         drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
+                        slides.highChamberClipUp(),
                         slideGripper.open(),
                         // Specimen 1 scored
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
                         slides.zero(),
                         // Begin sample pushing
                         drive.actionBuilder(new Pose2d(0, -33, Math.toRadians(90)))
@@ -136,49 +138,66 @@ public class Auto_Specimens extends LinearOpMode {
                                 // Sample 1 is pushed, begin Sample 2 push
                                 .build(),
                         // Begin Specimen 2 scoring
-                        arm.wall(),
                         lever.down(),
                         slides.zero(),
                         drive.actionBuilder(new Pose2d(spec1, -52, Math.toRadians(90)))
-                                .strafeToSplineHeading(new Vector2d(spec1, -35), Math.toRadians(0))
-                                .strafeToSplineHeading(new Vector2d(spec1, -55.2), Math.toRadians(-100))
+                                .strafeToSplineHeading(new Vector2d(spec1, -35), Math.toRadians(-100))
+                                .strafeToSplineHeading(new Vector2d(spec1, -55), Math.toRadians(-90))
                                 .build(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        align.alignForward(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.7).build(),
+                        align.alignBackward(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.9).build(),
+                        align.stop(),
+                        arm.wall(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.9).build(),
                         armGripper.close(),
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         arm.up(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.1).build(),
-                        lever.up(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.7).build(),
+                        align.alignForward(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        align.stop(),
+                        //lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(3).build(),
                         slides.resetZero(),
                         slideGripper.close(),
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         armGripper.open(),
                         slides.highChamber(),
-                        drive.actionBuilder(new Pose2d(spec1, -55.2, Math.toRadians(-90)))
+                        drive.actionBuilder(new Pose2d(spec1, -55, Math.toRadians(-90)))
                                 .setTangent(Math.toRadians(180))
                                 .splineToLinearHeading(new Pose2d(2,-33.25, Math.toRadians(90)), Math.toRadians(90))
                                 .build(),
                         slides.highChamberClip(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
+                        slides.highChamberClipUp(),
                         slideGripper.open(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
                         // Specimen 2 Scored, begin Specimen 3 scoring
-                        arm.wall(),
                         lever.down(),
                         slides.zero(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
                         drive.actionBuilder(new Pose2d(2, -33.25, Math.toRadians(90)))
                                 .setTangent(Math.toRadians(-90))
                                 .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(90)), Math.toRadians(-90))
                                 .strafeToSplineHeading(new Vector2d(spec2, -45), Math.toRadians(-90))
-                                .strafeToSplineHeading(new Vector2d(spec2, -55.2), Math.toRadians(-90))
+                                .strafeToSplineHeading(new Vector2d(spec2, -55), Math.toRadians(-90))
                                 .build(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        align.alignForward(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.7).build(),
+                        align.alignBackward(),
+                        drive.actionBuilder(initialPose).waitSeconds(1.9).build(),
+                        align.stop(),
+                        arm.wall(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.9).build(),
                         armGripper.close(),
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         arm.up(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.1).build(),
-                        lever.up(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.7).build(),
+                        align.alignForward(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        align.stop(),
+                        //lever.up(),
+                        drive.actionBuilder(initialPose).waitSeconds(3).build(),
                         slides.resetZero(),
                         slideGripper.close(),
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
@@ -190,7 +209,12 @@ public class Auto_Specimens extends LinearOpMode {
                                 .build(),
                         slides.highChamberClip(),
                         drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
-                        slideGripper.open()
+                        slides.highChamberClipUp(),
+                        slideGripper.open(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.3).build(),
+                        slides.zero()
+
+
                 )
         );
 
