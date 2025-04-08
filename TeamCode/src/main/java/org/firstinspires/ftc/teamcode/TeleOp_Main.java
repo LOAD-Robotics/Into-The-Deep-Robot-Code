@@ -102,6 +102,7 @@ public class TeleOp_Main extends OpMode
     private Servo SlideGripper;
     private Servo HangingArm;
     private Servo SampleAligner;
+    private Servo OdometryPuller;
 
     // Declare limit switches
     private DigitalChannel RLimitSwitch;
@@ -180,6 +181,7 @@ public class TeleOp_Main extends OpMode
         SlideGripper = hardwareMap.get(Servo.class, "Slide Gripper");
         HangingArm = hardwareMap.get(Servo.class, "Hanging Arm");
         SampleAligner = hardwareMap.get(Servo.class, "Sample Aligner");
+        OdometryPuller = hardwareMap.get(Servo.class, "Odometry Puller");
         // Initialize Limit Switches
         RLimitSwitch = hardwareMap.get(DigitalChannel.class, "Right Limit Switch");
         LLimitSwitch = hardwareMap.get(DigitalChannel.class, "Left Limit Switch");
@@ -287,6 +289,11 @@ public class TeleOp_Main extends OpMode
         Request an update from the Pinpoint odometry computer. This checks almost all outputs
         from the device in a single I2C read.
         */
+        if (gamepad2.dpad_left){
+            //OdometryPuller.setPosition(0.45);
+        }else{
+            //OdometryPuller.setPosition(0.49);
+        }
 
         // SafetyMode Telemetry
         if (SAFETY_MODE){
@@ -502,7 +509,7 @@ public class TeleOp_Main extends OpMode
             SlideGripperPos = 70;
         } else {
             // When B is not pressed, open the bottom gripper and close the top gripper
-            SlideGripperPos = 110;
+            SlideGripperPos = 112;
             // Get the current time in milliseconds. The value returned represents
             // the number of milliseconds since midnight, January 1, 1970 UTC.
             if (OldTime <= System.currentTimeMillis()) {
