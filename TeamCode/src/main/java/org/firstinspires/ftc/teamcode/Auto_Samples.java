@@ -89,6 +89,7 @@ public class Auto_Samples extends LinearOpMode {
         FrontArm arm = new FrontArm(hardwareMap);
         SampleLever lever = new SampleLever(hardwareMap);
         HangingArm hangingArm = new HangingArm(hardwareMap);
+        OdometryPuller odometryPuller = new OdometryPuller(hardwareMap);
 
 
         telemetry.addData("Status", "Initialized");
@@ -102,6 +103,8 @@ public class Auto_Samples extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
+                        odometryPuller.down(),
+                        hangingArm.down(),
                         arm.up(),
                         armGripper.close(),
                         lever.up(),
@@ -112,13 +115,13 @@ public class Auto_Samples extends LinearOpMode {
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.3).build(),
                         drive.actionBuilder(initialPose)
-                                .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(225))
+                                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(225))
                                 .build(),
                         slideGripper.open(),
                         // Sample 1 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(88))
+                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(85))
                                 .build(),
                         new ParallelAction(
                                 slides.zero(),
@@ -137,14 +140,14 @@ public class Auto_Samples extends LinearOpMode {
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-55, -57), Math.toRadians(230))
+                                .strafeToLinearHeading(new Vector2d(-58, -58), Math.toRadians(230))
                                 .build(),
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         slideGripper.open(),
                         // Sample 2 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-47.5, -41.5), Math.toRadians(86))
+                                .strafeToLinearHeading(new Vector2d(-47.5, -41.5), Math.toRadians(85))
                                 .build(),
                         new ParallelAction(
                                 slides.zero(),
@@ -163,7 +166,7 @@ public class Auto_Samples extends LinearOpMode {
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(230))
+                                .strafeToLinearHeading(new Vector2d(-58, -58), Math.toRadians(230))
                                 .build(),
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         slideGripper.open(),

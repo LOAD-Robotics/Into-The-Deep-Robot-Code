@@ -87,6 +87,7 @@ public class Auto_Specimens extends LinearOpMode {
         SampleLever lever = new SampleLever(hardwareMap);
         HangingArm hangingArm = new HangingArm(hardwareMap);
         Drivetrain align = new Drivetrain(hardwareMap);
+        OdometryPuller odometryPuller = new OdometryPuller(hardwareMap);
 
 
 
@@ -104,6 +105,7 @@ public class Auto_Specimens extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         // Insert auto code here
+                        odometryPuller.down(),
                         arm.up(),
                         armGripper.close(),
                         lever.up(),

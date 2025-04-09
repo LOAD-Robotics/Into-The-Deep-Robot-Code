@@ -18,7 +18,7 @@ public class SampleLever {
     public class up implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            lever.setPosition((double) 120 / 180);
+            lever.setPosition((double) 110 / 180);
             return false;
         }
     }

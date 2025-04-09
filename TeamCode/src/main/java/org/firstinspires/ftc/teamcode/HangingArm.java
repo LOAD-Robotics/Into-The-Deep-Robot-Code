@@ -35,7 +35,7 @@ public class HangingArm {
     public class down implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 215 / 300);
+            arm.setPosition((double) 225 / 300);
             return false;
         }
     }

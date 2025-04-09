@@ -139,7 +139,7 @@ public class TeleOp_Main extends OpMode
     int SlideGripperPos = 0;
     long OldTime = 0;
     // Variable for storing the position of the slappy arm
-    int TopHangingArmPos = 0;
+    int TopHangingArmPos = 130;
     // Variables for storing values for the hanging winches
     int WinchSpeed = 300;
     int winch1Pos;
@@ -148,7 +148,7 @@ public class TeleOp_Main extends OpMode
     // Variables for storing zero offsets for the various servos
         // Positive offset moves the arm towards the ideal zero pos
         // Negative moves it away
-        int zeroOffset_Hanging = 5;
+        int zeroOffset_Hanging = 15;
     // SAFETY MODE
     boolean SAFETY_MODE = false;
 
@@ -289,10 +289,8 @@ public class TeleOp_Main extends OpMode
         Request an update from the Pinpoint odometry computer. This checks almost all outputs
         from the device in a single I2C read.
         */
-        if (gamepad2.dpad_left){
-            //OdometryPuller.setPosition(0.45);
-        }else{
-            //OdometryPuller.setPosition(0.49);
+        if (gamepad2.dpad_down || gamepad2.a){
+            OdometryPuller.setPosition(0.52);
         }
 
         // SafetyMode Telemetry
@@ -359,7 +357,7 @@ public class TeleOp_Main extends OpMode
      */
     private void UpdateSampleAligner() {
         if (ArmPos < 15){
-            SampleAligner.setPosition((double) 120 / 180);
+            SampleAligner.setPosition((double) 110 / 180);
         }else{
             SampleAligner.setPosition((double) 50 / 180);
         }

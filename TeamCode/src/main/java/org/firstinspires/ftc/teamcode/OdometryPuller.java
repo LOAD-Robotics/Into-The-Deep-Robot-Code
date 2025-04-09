@@ -18,7 +18,7 @@ public class OdometryPuller {
     public class up implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            puller.setPosition((double) 0 / 900);
+            puller.setPosition((double) 0.52);
             return false;
         }
     }
@@ -28,7 +28,7 @@ public class OdometryPuller {
     public class down implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            puller.setPosition((double) 20 / 900);
+            puller.setPosition((double) 0.462);
             return false;
         }
     }
