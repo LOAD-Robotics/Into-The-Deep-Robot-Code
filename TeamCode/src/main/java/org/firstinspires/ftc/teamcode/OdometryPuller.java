@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class OdometryPuller {
-    private Servo puller;
+    private final Servo puller;
 
     public OdometryPuller(HardwareMap hardwareMap) {
         puller = hardwareMap.get(Servo.class, "Odometry Puller");
@@ -18,7 +18,7 @@ public class OdometryPuller {
     public class up implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            puller.setPosition((double) 0.52);
+            puller.setPosition(0.52);
             return false;
         }
     }
@@ -28,7 +28,7 @@ public class OdometryPuller {
     public class down implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            puller.setPosition((double) 0.462);
+            puller.setPosition(0.462);
             return false;
         }
     }

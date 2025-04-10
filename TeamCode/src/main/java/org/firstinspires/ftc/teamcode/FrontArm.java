@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class FrontArm {
-    private Servo arm;
+    private final Servo arm;
 
     public FrontArm(HardwareMap hardwareMap) {
         arm = hardwareMap.get(Servo.class, "Front Arm");
@@ -18,7 +18,7 @@ public class FrontArm {
     public class up implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 16.5 / 180);
+            arm.setPosition(16.5 / 180);
             return false;
         }
     }
@@ -28,7 +28,7 @@ public class FrontArm {
     public class floor implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 54.25 / 180);
+            arm.setPosition(54.25 / 180);
             return false;
         }
     }
@@ -38,7 +38,7 @@ public class FrontArm {
     public class wall implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 32.5 / 180);
+            arm.setPosition(32.5 / 180);
             return false;
         }
     }

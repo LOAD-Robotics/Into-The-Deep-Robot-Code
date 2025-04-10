@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class Slides {
-    private DcMotor motor1;
-    private DcMotor motor2;
+    private final DcMotor motor1;
+    private final DcMotor motor2;
 
     public Slides (HardwareMap hardwareMap){
         motor1 = hardwareMap.get(DcMotor.class, "Lslide");
@@ -57,8 +57,8 @@ public class Slides {
     public class highBasket implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            motor1.setTargetPosition(-5000);
-            motor2.setTargetPosition(-5000);
+            motor1.setTargetPosition(-4800);
+            motor2.setTargetPosition(-4800);
             motor1.setPower(1);
             motor2.setPower(1);
             motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);

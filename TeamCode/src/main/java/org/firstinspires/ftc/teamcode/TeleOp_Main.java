@@ -114,9 +114,6 @@ public class TeleOp_Main extends OpMode
     // Declare Gobilda Odometry Pod
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
 
-    // Declare LOAD_Tools object
-    LOAD_Tools lt = new LOAD_Tools();
-
     // Declare code data variables
     // Variable to store battery data
     double MinBatteryVoltage = 9999999;
@@ -128,10 +125,13 @@ public class TeleOp_Main extends OpMode
     int speedPercent = 65;
     int driveForwardActive = 0;
     double driveForwardBeginTime = 0;
-    // Variable to store the movement power (speed) of the linear slides
+    // Variable to store the data for the linear slides
     double SlidePow = 0;
     double MaxSlideLCurrent = 0;
     double MaxSlideRCurrent = 0;
+    int LSlideHoldPos = 0;
+    int RSlideHoldPos = 0;
+    boolean SlideHoldPosSet = false;
     // Variable to store the movement speed of the front arm
     double ArmPos = 0;
     // Variables for storing the position of the grippers, as well as a millis()-based delay
@@ -139,12 +139,7 @@ public class TeleOp_Main extends OpMode
     int SlideGripperPos = 0;
     long OldTime = 0;
     // Variable for storing the position of the slappy arm
-    int TopHangingArmPos = 130;
-    // Variables for storing values for the hanging winches
-    int WinchSpeed = 300;
-    int winch1Pos;
-    int winch2Pos;
-    int MaxWinchPos;
+    int TopHangingArmPos = 120;
     // Variables for storing zero offsets for the various servos
         // Positive offset moves the arm towards the ideal zero pos
         // Negative moves it away
@@ -422,6 +417,7 @@ public class TeleOp_Main extends OpMode
     private void UpdateSlides() {
         SlidePow = Math.abs(gamepad2.right_stick_y * 1);
         if (gamepad2.right_stick_button) {
+            SlideHoldPosSet = false;
             slideL.setTargetPosition(-1545);
             slideR.setTargetPosition(-1545);
             slideL.setPower(1);
@@ -430,6 +426,7 @@ public class TeleOp_Main extends OpMode
             slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         } else {
             if (gamepad2.right_stick_y > 0.05) {
+                SlideHoldPosSet = false;
                 slideL.setTargetPosition(0);
                 slideR.setTargetPosition(0);
                 slideL.setPower(SlidePow);
@@ -437,15 +434,21 @@ public class TeleOp_Main extends OpMode
                 slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else if (gamepad2.right_stick_y < -0.05) {
-                slideL.setTargetPosition(-5550);
-                slideR.setTargetPosition(-5550);
+                SlideHoldPosSet = false;
+                slideL.setTargetPosition(-5000);
+                slideR.setTargetPosition(-5000);
                 slideL.setPower(SlidePow);
                 slideR.setPower(SlidePow);
                 slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else {
-                slideR.setTargetPosition(slideR.getCurrentPosition());
-                slideL.setTargetPosition(slideL.getCurrentPosition());
+                if (!SlideHoldPosSet){
+                    SlideHoldPosSet = true;
+                    RSlideHoldPos = slideR.getCurrentPosition();
+                    LSlideHoldPos = slideL.getCurrentPosition();
+                }
+                slideR.setTargetPosition(RSlideHoldPos);
+                slideL.setTargetPosition(LSlideHoldPos);
                 slideR.setPower(1);
                 slideL.setPower(1);
                 slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -514,9 +517,7 @@ public class TeleOp_Main extends OpMode
                 FrontArmGripperPos = 90;
             }
         }
-        /*if (!((slideL.getCurrentPosition() + slideR.getCurrentPosition()) / 2 >= -250)) {
-            FrontArmGripperPos = 120;
-        }*/
+
         // Set the positions of the servos
         FrontArmGripper.setPosition((double) FrontArmGripperPos / 180);
         SlideGripper.setPosition((double) SlideGripperPos / 180);

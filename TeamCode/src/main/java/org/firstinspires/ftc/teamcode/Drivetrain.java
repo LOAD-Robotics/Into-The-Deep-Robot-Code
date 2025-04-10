@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Drivetrain {
-    private DcMotor FL;
-    private DcMotor FR;
-    private DcMotor BL;
-    private DcMotor BR;
+    private final DcMotor FL;
+    private final DcMotor FR;
+    private final DcMotor BL;
+    private final DcMotor BR;
     private DcMotor.RunMode mode;
 
     public Drivetrain(HardwareMap hardwareMap) {
@@ -53,10 +53,10 @@ public class Drivetrain {
             FR.setPower(0.5);
             BL.setPower(0.5);
             BR.setPower(0.5);
-            FL.setTargetPosition(FL.getCurrentPosition()-390);
-            FR.setTargetPosition(FR.getCurrentPosition()-390);
-            BL.setTargetPosition(BL.getCurrentPosition()-390);
-            BR.setTargetPosition(BR.getCurrentPosition()-390);
+            FL.setTargetPosition(FL.getCurrentPosition()-320);
+            FR.setTargetPosition(FR.getCurrentPosition()-320);
+            BL.setTargetPosition(BL.getCurrentPosition()-320);
+            BR.setTargetPosition(BR.getCurrentPosition()-320);
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);

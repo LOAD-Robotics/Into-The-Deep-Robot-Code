@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class SampleLever {
-    private Servo lever;
+    private final Servo lever;
 
     public SampleLever(HardwareMap hardwareMap) {
         lever = hardwareMap.get(Servo.class, "Sample Aligner");

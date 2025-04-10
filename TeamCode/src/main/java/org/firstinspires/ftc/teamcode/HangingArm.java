@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class HangingArm {
-    private Servo arm;
+    private final Servo arm;
 
     public HangingArm(HardwareMap hardwareMap) {
         arm = hardwareMap.get(Servo.class, "Hanging Arm");
@@ -26,7 +26,7 @@ public class HangingArm {
     public class bar implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            arm.setPosition((double) 190 / 300);
+            arm.setPosition((double) 200 / 300);
             return false;
         }
     }

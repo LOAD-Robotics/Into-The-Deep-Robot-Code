@@ -47,7 +47,6 @@ public class MeepMeepTesting {
                 .build());
          */
         double spec1 = 46;
-        double spec2 = 53;
 
         SpecimenBot.runAction(SpecimenBot.getDrive().actionBuilder(new Pose2d(9, -61.5, Math.toRadians(90)))
                 .strafeToLinearHeading(new Vector2d(0,-32.9), Math.toRadians(90))
@@ -88,7 +87,7 @@ public class MeepMeepTesting {
                         .waitSeconds(1.75)
                 .strafeToLinearHeading(new Vector2d(-56, -57), Math.toRadians(230))
                         .waitSeconds(0.4)
-                .strafeToSplineHeading(new Vector2d(-50,-20), Math.toRadians(0))
+                .strafeToSplineHeading(new Vector2d(-40,-20), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-20,0), Math.toRadians(0))
                 .build()
         );

@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 // NON RR
 import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -121,7 +122,7 @@ public class Auto_Samples extends LinearOpMode {
                         // Sample 1 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(85))
+                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(84))
                                 .build(),
                         new ParallelAction(
                                 slides.zero(),
@@ -140,14 +141,14 @@ public class Auto_Samples extends LinearOpMode {
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-58, -58), Math.toRadians(230))
+                                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(250))
                                 .build(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
                         slideGripper.open(),
                         // Sample 2 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-47.5, -41.5), Math.toRadians(85))
+                                .strafeToLinearHeading(new Vector2d(-48.5, -41.5), Math.toRadians(80))
                                 .build(),
                         new ParallelAction(
                                 slides.zero(),
@@ -166,9 +167,9 @@ public class Auto_Samples extends LinearOpMode {
                         slides.highBasket(),
                         drive.actionBuilder(initialPose).waitSeconds(1.75).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-58, -58), Math.toRadians(230))
+                                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(250))
                                 .build(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
                         slideGripper.open(),
                         // Sample 3 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
@@ -177,11 +178,12 @@ public class Auto_Samples extends LinearOpMode {
                                 new SequentialAction(
                                         drive.actionBuilder(initialPose).waitSeconds(0.5).build(),
                                         slides.zero(),
-                                        hangingArm.up()
+                                        hangingArm.up(),
+                                        slideGripper.close()
                                 ),
                                 drive.actionBuilder(drive.localizer.getPose())
-                                        .strafeToSplineHeading(new Vector2d(-50,-20), Math.toRadians(0))
-                                        .splineToConstantHeading(new Vector2d(-20,0), Math.toRadians(0))
+                                        .strafeToSplineHeading(new Vector2d(-40,-20), Math.toRadians(0))
+                                        .splineToSplineHeading(new Pose2d(-23,-5, Math.toRadians(0)), Math.toRadians(0), new TranslationalVelConstraint(30))
                                         .build()
                         ),
                         hangingArm.bar()

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class ArmGripper {
-    private Servo claw;
+    private final Servo claw;
 
     public ArmGripper(HardwareMap hardwareMap) {
         claw = hardwareMap.get(Servo.class, "Front Arm Gripper");

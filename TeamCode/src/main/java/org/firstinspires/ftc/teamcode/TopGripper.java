@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class TopGripper {
-    private Servo claw;
+    private final Servo claw;
 
     public TopGripper(HardwareMap hardwareMap) {
         claw = hardwareMap.get(Servo.class, "Slide Gripper");
