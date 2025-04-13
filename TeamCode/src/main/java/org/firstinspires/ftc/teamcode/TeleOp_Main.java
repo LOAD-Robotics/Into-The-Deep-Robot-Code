@@ -487,7 +487,7 @@ public class TeleOp_Main extends OpMode
             ArmPos = 29;
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 13), 50);
+        ArmPos = Math.min(Math.max(ArmPos, 14), 50);
         // Set the position of the servo
         float servoOffset = 3.5F; // Less is further up, more is further down
         FrontArm.setPosition((ArmPos+servoOffset) / 180);
