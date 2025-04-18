@@ -122,7 +122,7 @@ public class Auto_Samples extends LinearOpMode {
                         // Sample 1 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-59,-41), Math.toRadians(83.2))
+                                .strafeToLinearHeading(new Vector2d(-61,-41), Math.toRadians(83.2))
                                 .build(),
                         new ParallelAction(
                                 slides.zero(),
@@ -148,7 +148,7 @@ public class Auto_Samples extends LinearOpMode {
                         // Sample 2 Scored
                         drive.actionBuilder(initialPose).waitSeconds(0.2).build(),
                         drive.actionBuilder(drive.localizer.getPose())
-                                .strafeToLinearHeading(new Vector2d(-48.5, -41.5), Math.toRadians(80))
+                                .strafeToLinearHeading(new Vector2d(-50.75, -41.5), Math.toRadians(80))
                                 .build(),
                         new ParallelAction(
                                 slides.zero(),

@@ -280,20 +280,13 @@ public class TeleOp_Main extends OpMode
     @Override
     public void loop() {
 
-        /*
-        Request an update from the Pinpoint odometry computer. This checks almost all outputs
-        from the device in a single I2C read.
-        */
+
         if (gamepad2.dpad_down || gamepad2.a){
             OdometryPuller.setPosition(0.52);
         }
 
         // SafetyMode Telemetry
-        if (SAFETY_MODE){
-            telemetry.addData("[SAFETY MODE]", "True");
-        } else {
-            telemetry.addData("[SAFETY MODE]", "False");
-        }
+        telemetry.addData("[SAFETY MODE]", SAFETY_MODE);
         telemetry.addData("-------------------------------------------", "-");
 
         MaxSlideLCurrent = Math.max(MaxSlideLCurrent, ((DcMotorEx) slideL).getCurrent(CurrentUnit.AMPS));
@@ -487,7 +480,7 @@ public class TeleOp_Main extends OpMode
             ArmPos = 29;
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 14), 50);
+        ArmPos = Math.min(Math.max(ArmPos, 14), 55);
         // Set the position of the servo
         float servoOffset = 3.5F; // Less is further up, more is further down
         FrontArm.setPosition((ArmPos+servoOffset) / 180);

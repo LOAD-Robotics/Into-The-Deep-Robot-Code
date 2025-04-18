@@ -28,10 +28,11 @@ public class Drivetrain {
     public class alignForward implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            FL.setPower(0.5);
-            FR.setPower(0.5);
-            BL.setPower(0.5);
-            BR.setPower(0.5);
+            float speed = 0.5F;
+            FL.setPower(speed);
+            FR.setPower(speed);
+            BL.setPower(speed);
+            BR.setPower(speed);
             FL.setTargetPosition(FL.getCurrentPosition()+800);
             FR.setTargetPosition(FR.getCurrentPosition()+800);
             BL.setTargetPosition(BL.getCurrentPosition()+800);
