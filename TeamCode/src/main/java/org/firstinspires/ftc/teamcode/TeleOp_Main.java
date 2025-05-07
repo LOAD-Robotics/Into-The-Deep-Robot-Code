@@ -143,9 +143,9 @@ public class TeleOp_Main extends OpMode
     // Variables for storing zero offsets for the various servos
         // Positive offset moves the arm towards the ideal zero pos
         // Negative moves it away
-        int zeroOffset_Hanging = 15;
+        int zeroOffset_Hanging = 20;
     // SAFETY MODE
-    boolean SAFETY_MODE = false;
+    boolean SAFETY_MODE = true;
 
 
 
@@ -359,8 +359,8 @@ public class TeleOp_Main extends OpMode
 
         //telemetry.addData("-------------------------------------------", "-");
         if (SAFETY_MODE){
-            speedPercent = 33;
-            telemetry.addData("[SAFETY MODE ACTIVE] Driving Speed Percentage", "33%");
+            speedPercent = 45;
+            telemetry.addData("[SAFETY MODE ACTIVE] Driving Speed Percentage", "45%");
         } else if (gamepad1.right_trigger > 0.1) {
             speedPercent = 100;
             telemetry.addData("Driving Speed Percentage", "100%");
