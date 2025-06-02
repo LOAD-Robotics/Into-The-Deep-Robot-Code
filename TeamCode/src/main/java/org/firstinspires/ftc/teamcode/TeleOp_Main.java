@@ -145,11 +145,11 @@ public class TeleOp_Main extends OpMode
         // Negative moves it away
         int zeroOffset_Hanging = 20;
     // SAFETY MODE
-    boolean SAFETY_MODE = true;
+    boolean SAFETY_MODE = false;
 
 
 
-    /*
+    /**
      * Code to run ONCE when the driver hits INIT
      */
     @Override
@@ -259,14 +259,14 @@ public class TeleOp_Main extends OpMode
         telemetry.addData("Status", "Initialized");
     }
 
-    /*
+    /**
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
      */
     @Override
     public void init_loop() {
     }
 
-    /*
+    /**
      * Code to run ONCE when the driver hits START
      */
     @Override
@@ -274,7 +274,7 @@ public class TeleOp_Main extends OpMode
         runtime.reset();
     }
 
-    /*
+    /**
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
      */
     @Override
@@ -333,7 +333,7 @@ public class TeleOp_Main extends OpMode
 
     }
 
-    /*
+    /**
      * Code to run ONCE after the driver hits STOP
      */
     @Override
@@ -341,10 +341,10 @@ public class TeleOp_Main extends OpMode
     }
 
     /**
-     * This function handles the math for the mecanum drivetrain
+     * This function handles the sample pusher on the front arm
      */
     private void UpdateSampleAligner() {
-        if (ArmPos < 15){
+        if (ArmPos < 19){
             SampleAligner.setPosition((double) 110 / 180);
         }else{
             SampleAligner.setPosition((double) 50 / 180);
@@ -480,7 +480,7 @@ public class TeleOp_Main extends OpMode
             ArmPos = 29;
         }
         // Constrain the arm position to prevent it from breaking
-        ArmPos = Math.min(Math.max(ArmPos, 14), 55);
+        ArmPos = Math.min(Math.max(ArmPos, 18), 55);
         // Set the position of the servo
         float servoOffset = 3.5F; // Less is further up, more is further down
         FrontArm.setPosition((ArmPos+servoOffset) / 180);

@@ -130,13 +130,12 @@ public class Auto_Specimens extends LinearOpMode {
                                 .setTangent(Math.toRadians(-90))
                                 .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(90)), Math.toRadians(-90))
                                 .splineToLinearHeading(new Pose2d(20, -50, Math.toRadians(90)), Math.toRadians(0), null, new ProfileAccelConstraint(-40, 90))
-                                .splineToLinearHeading(new Pose2d(44, -35, Math.toRadians(90)), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(45, -35, Math.toRadians(90)), Math.toRadians(90))
                                 // Begin Sample 1 push
-                                .splineToLinearHeading(new Pose2d(44, 0, Math.toRadians(90)), Math.toRadians(90))
+                                .splineToLinearHeading(new Pose2d(45, 0, Math.toRadians(90)), Math.toRadians(90))
                                 .splineToLinearHeading(new Pose2d(50, -5, Math.toRadians(90)), Math.toRadians(0))
                                 .splineToLinearHeading(new Pose2d(spec1+1, 0, Math.toRadians(90)), Math.toRadians(-90))
                                 .splineToLinearHeading(new Pose2d(spec1, -52, Math.toRadians(90)), Math.toRadians(-90))
-                                // Sample 1 is pushed, begin Sample 2 push
                                 .build(),
                         // Begin Specimen 2 scoring
                         lever.down(),
@@ -145,13 +144,13 @@ public class Auto_Specimens extends LinearOpMode {
                                 .setTangent(Math.toRadians(180))
                                 .splineToSplineHeading(new Pose2d(spec1-10, -45, Math.toRadians(0)), Math.toRadians(90))
                                 .splineToSplineHeading(new Pose2d(spec1, -35, Math.toRadians(0)), Math.toRadians(-90))
-                                .splineToSplineHeading(new Pose2d(spec1, -60, Math.toRadians(-95)), Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(spec1, -62, Math.toRadians(-103)), Math.toRadians(-90))
                                 .build(),
                         align.alignForward(),
                         drive.actionBuilder(initialPose).waitSeconds(0.4).build(),
                         align.alignBackward(),
                         slideGripper.close(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.55).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.65).build(),
                         align.stop(),
                         arm.wall(),
                         drive.actionBuilder(initialPose).waitSeconds(0.7).build(),
@@ -183,13 +182,13 @@ public class Auto_Specimens extends LinearOpMode {
                         slides.zero(),
                         drive.actionBuilder(new Pose2d(3, -33, Math.toRadians(90)))
                                 .setTangent(Math.toRadians(-30))
-                                .strafeToSplineHeading(new Vector2d(spec1, -60), Math.toRadians(-89))
+                                .strafeToSplineHeading(new Vector2d(spec1, -60), Math.toRadians(-90))
                                 .build(),
                         align.alignForward(),
                         drive.actionBuilder(initialPose).waitSeconds(0.6).build(),
                         align.alignBackward(),
                         slideGripper.close(),
-                        drive.actionBuilder(initialPose).waitSeconds(0.7).build(),
+                        drive.actionBuilder(initialPose).waitSeconds(0.65).build(),
                         align.stop(),
                         arm.wall(),
                         drive.actionBuilder(initialPose).waitSeconds(0.7).build(),

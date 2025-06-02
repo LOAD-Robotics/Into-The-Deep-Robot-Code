@@ -54,10 +54,10 @@ public class Drivetrain {
             FR.setPower(0.5);
             BL.setPower(0.5);
             BR.setPower(0.5);
-            FL.setTargetPosition(FL.getCurrentPosition()-320);
-            FR.setTargetPosition(FR.getCurrentPosition()-320);
-            BL.setTargetPosition(BL.getCurrentPosition()-320);
-            BR.setTargetPosition(BR.getCurrentPosition()-320);
+            FL.setTargetPosition(FL.getCurrentPosition()-280);
+            FR.setTargetPosition(FR.getCurrentPosition()-280);
+            BL.setTargetPosition(BL.getCurrentPosition()-280);
+            BR.setTargetPosition(BR.getCurrentPosition()-280);
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
