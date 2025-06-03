@@ -477,7 +477,7 @@ public class TeleOp_Main extends OpMode
         }
         // When the left stick button is pressed, go to the correct angle to get a specimen off the wall
         if (gamepad2.left_stick_button){
-            ArmPos = 29;
+            ArmPos = 33.5;
         }
         // Constrain the arm position to prevent it from breaking
         ArmPos = Math.min(Math.max(ArmPos, 18), 55);
