@@ -145,7 +145,8 @@ public class TeleOp_Main extends OpMode
         // Negative moves it away
         int zeroOffset_Hanging = 20;
     // SAFETY MODE
-    boolean SAFETY_MODE = false;
+    boolean SAFETY_MODE = true;
+    boolean justPressed = false;
 
 
 
@@ -322,14 +323,21 @@ public class TeleOp_Main extends OpMode
         odo.update();
 
         UpdateDrivetrain();
-        UpdateSlides();
         UpdateArmServo();
         UpdateGrippers();
         if (!SAFETY_MODE) {
             UpdateHangingArm();
             UpdateWinches();
+            UpdateSlides();
         }
         UpdateSampleAligner();
+
+        if (gamepad1.x && gamepad2.x && !justPressed){
+            SAFETY_MODE = !SAFETY_MODE;
+            justPressed = true;
+        }else if (!gamepad1.x && !gamepad2.x){
+            justPressed = false;
+        }
 
     }
 
@@ -358,6 +366,7 @@ public class TeleOp_Main extends OpMode
     private void UpdateDrivetrain() {
 
         //telemetry.addData("-------------------------------------------", "-");
+
         if (SAFETY_MODE){
             speedPercent = 45;
             telemetry.addData("[SAFETY MODE ACTIVE] Driving Speed Percentage", "45%");
